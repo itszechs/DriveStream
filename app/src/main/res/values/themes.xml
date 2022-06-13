@@ -12,4 +12,29 @@
         <item name="android:navigationBarColor">@color/fadedColor</item>
     </style>
 
+    <style name="MenuTheme" parent="@style/Widget.Material3.ActionBar.Solid">
+        <item name="android:textColorSecondary">@color/textColor</item>
+        <item name="android:actionMenuTextColor">@color/textColor</item>
+        <item name="android:backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/textColor</item>
+        <item name="colorControlNormal">@color/textColor</item>
+        <item name="selectableItemBackground">?android:selectableItemBackground</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
+    </style>
+
+
+    <style name="IconButtonTheme" parent="Widget.Material3.Button.IconButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="fontFamily">@font/roboto_medium</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textColor">@color/textColor_87</item>
+        <item name="android:padding">16dp</item>
+        <item name="iconPadding">24dp</item>
+        <item name="cornerRadius">0dp</item>
+        <item name="iconSize">24dp</item>
+        <item name="iconTint">@color/textColor_87</item>
+    </style>
+
 </resources>
