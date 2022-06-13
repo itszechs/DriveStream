@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Drive Stream</string>
+
+    <string name="trying_to_sign_in">Trying to sign-in…</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
