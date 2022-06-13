@@ -2,6 +2,8 @@ package zechs.drive.stream.ui.main
 
 import android.content.Intent
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,8 +23,9 @@ class MainViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
 
-    private val _hasLoggedIn = MutableStateFlow(false)
-    val hasLoggedIn = _hasLoggedIn.asStateFlow()
+    private val _loginStatus = MutableLiveData<String>()
+    val loginStatus: LiveData<String>
+        get() = _loginStatus
 
     init {
         viewModelScope.launch {
@@ -36,6 +39,7 @@ class MainViewModel @Inject constructor(
         val msg = if (driveHelper.hasSignedIn && driveHelper.drive != null) {
             "Sign-in was successful"
         } else "Unable to create drive service"
+        _loginStatus.value = msg
         Log.d(TAG, msg)
     }
 
