@@ -1,14 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="top"
+        android:backgroundTint="@color/cardColor_50"
+        android:elevation="16dp"
+        app:elevation="16dp">
 
-</FrameLayout>
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="@style/MenuTheme"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="@string/app_name" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMyDrive"
+            style="@style/IconButtonTheme"
+            android:text="@string/my_drive"
+            app:icon="@drawable/ic_my_drive_24" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSharedDrives"
+            style="@style/IconButtonTheme"
+            android:text="@string/shared_drives"
+            app:icon="@drawable/ic_shared_drive_24" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSharedWithMe"
+            style="@style/IconButtonTheme"
+            android:text="@string/shared_with_me"
+            app:icon="@drawable/ic_shared_me_24" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStarred"
+            style="@style/IconButtonTheme"
+            android:text="@string/starred"
+            app:icon="@drawable/ic_starred_24" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTrashed"
+            style="@style/IconButtonTheme"
+            android:text="@string/trashed"
+            app:icon="@drawable/ic_delete_24" />
+
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
