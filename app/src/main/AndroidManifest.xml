@@ -9,7 +9,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DriveStream"
+        android:theme="@style/AppTheme"
         tools:ignore="DataExtractionRules">
         <activity
             android:name=".ui.main.MainActivity"
