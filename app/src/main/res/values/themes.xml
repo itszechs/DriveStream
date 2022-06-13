@@ -7,6 +7,9 @@
         <item name="windowSplashScreenIconBackgroundColor">#110F16</item>
     </style>
 
-    <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar" />
+    <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:statusBarColor">@color/fadedColor</item>
+        <item name="android:navigationBarColor">@color/fadedColor</item>
+    </style>
 
 </resources>
