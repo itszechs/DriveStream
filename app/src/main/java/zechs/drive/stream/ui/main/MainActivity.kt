@@ -20,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import zechs.drive.stream.R
 import zechs.drive.stream.databinding.ActivityMainBinding
+import zechs.drive.stream.utils.ext.navigateSafe
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -102,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "hasLoggedIn=${hasLoggedIn}")
         val currentFragment = navController.currentDestination?.id
         if (hasLoggedIn && currentFragment != null && currentFragment == R.id.signInFragment) {
-            navController.navigate(R.id.action_signInFragment_to_homeFragment)
+            navController.navigateSafe(R.id.action_signInFragment_to_homeFragment)
         }
     }
 
