@@ -26,9 +26,18 @@ class DriveHelper @Inject constructor(
         const val TAG = "DriveHelper"
     }
 
-    private var hasSignedIn = false
+    var drive: Drive? = null
+        private set
 
-    suspend fun handleSignInResult(
+    var hasSignedIn = false
+        private set
+
+    suspend fun handleSignIn(result: Intent) {
+        val drive = handleSignInResult(result)
+        setDrive(drive)
+    }
+
+    private suspend fun handleSignInResult(
         result: Intent
     ): Drive? = suspendCancellableCoroutine { cont ->
         GoogleSignIn.getSignedInAccountFromIntent(result)
@@ -71,6 +80,10 @@ class DriveHelper @Inject constructor(
             GoogleSignIn.getLastSignedInAccount(context),
             Scope(DriveScopes.DRIVE)
         )
+    }
+
+    private fun setDrive(drive: Drive?) {
+        this.drive = drive
     }
 
 }
