@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == RESULT_OK && result.data != null) {
                 val intent = result.data!!
                 Log.d(TAG, "intent=$intent")
+                viewModel.handleSignInResult(intent)
             }
         }
         startForResult.launch(client.signInIntent)
