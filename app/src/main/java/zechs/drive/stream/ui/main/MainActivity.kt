@@ -7,6 +7,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -14,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.Scopes
 import com.google.android.gms.common.api.Scope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import zechs.drive.stream.R
 import zechs.drive.stream.databinding.ActivityMainBinding
 
@@ -44,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
 
         requestSignIn()
+        redirectOnLogin()
     }
 
     private fun doSplashScreen() {
@@ -81,6 +86,24 @@ class MainActivity : AppCompatActivity() {
             }
         }
         startForResult.launch(client.signInIntent)
+    }
+
+    private fun redirectOnLogin() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.hasLoggedIn.collect {
+                    handleLogin(hasLoggedIn = it)
+                }
+            }
+        }
+    }
+
+    private fun handleLogin(hasLoggedIn: Boolean) {
+        Log.d(TAG, "hasLoggedIn=${hasLoggedIn}")
+        val currentFragment = navController.currentDestination?.id
+        if (hasLoggedIn && currentFragment != null && currentFragment == R.id.signInFragment) {
+            navController.navigate(R.id.action_signInFragment_to_homeFragment)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

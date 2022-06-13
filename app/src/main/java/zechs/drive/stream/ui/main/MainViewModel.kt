@@ -23,6 +23,9 @@ class MainViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
 
+    private val _hasLoggedIn = MutableStateFlow(false)
+    val hasLoggedIn = _hasLoggedIn.asStateFlow()
+
     private val _loginStatus = MutableLiveData<String>()
     val loginStatus: LiveData<String>
         get() = _loginStatus
@@ -37,6 +40,7 @@ class MainViewModel @Inject constructor(
     fun handleSignInResult(result: Intent) = viewModelScope.launch {
         driveHelper.handleSignIn(result)
         val msg = if (driveHelper.hasSignedIn && driveHelper.drive != null) {
+            _hasLoggedIn.value = true
             "Sign-in was successful"
         } else "Unable to create drive service"
         _loginStatus.value = msg
