@@ -9,7 +9,18 @@
         android:id="@+id/filesFragment"
         android:name="zechs.drive.stream.ui.files.FilesFragment"
         android:label="FilesFragment"
-        tools:layout="@layout/fragment_files" />
+        tools:layout="@layout/fragment_files">
+        <argument
+            android:name="name"
+            app:argType="string" />
+        <argument
+            android:name="query"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_filesFragment_self"
+            app:destination="@id/filesFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/signInFragment"
