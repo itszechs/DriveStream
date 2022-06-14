@@ -43,8 +43,6 @@ class FilesFragment : Fragment() {
     }
     private val args by navArgs<FilesFragmentArgs>()
 
-    private var hasLoaded = false
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -74,7 +72,7 @@ class FilesFragment : Fragment() {
     }
 
     private fun setupFilesObserver() {
-        if (!hasLoaded) {
+        if (!viewModel.hasLoaded) {
             viewModel.queryFiles(args.query)
         }
 
@@ -92,7 +90,7 @@ class FilesFragment : Fragment() {
                 showSnackBar(response.message)
             }
             is Resource.Loading -> {
-                if (!hasLoaded) {
+                if (!viewModel.hasLoaded) {
                     isLoading(true)
                 }
             }
@@ -100,12 +98,12 @@ class FilesFragment : Fragment() {
     }
 
     private fun onSuccess(files: List<DriveFile>) {
-        if (!hasLoaded) {
+        if (!viewModel.hasLoaded) {
             doTransition(MaterialFadeThrough())
         }
 
         isLoading(false)
-        hasLoaded = true
+        viewModel.hasLoaded = true
 
         lifecycleScope.launch {
             filesAdapter.submitList(files.toMutableList())

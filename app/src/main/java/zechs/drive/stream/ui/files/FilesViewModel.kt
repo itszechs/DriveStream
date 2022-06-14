@@ -29,6 +29,8 @@ class FilesViewModel @Inject constructor(
     private var response: MutableList<DriveFile>? = null
     private val pageSize = 25
 
+    var hasLoaded = false
+
     fun queryFiles(query: String?) = viewModelScope.launch(Dispatchers.IO) {
         _filesList.postValue(Resource.Loading())
         try {
