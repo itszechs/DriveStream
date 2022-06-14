@@ -1,14 +1,10 @@
 <resources>
     <string name="app_name">Drive Stream</string>
-
+    <string name="something_went_wrong">Something went wrong</string>
     <string name="trying_to_sign_in">Trying to sign-in…</string>
     <string name="my_drive">My drive</string>
     <string name="shared_drives">Shared drives</string>
     <string name="shared_with_me">Shared with me</string>
     <string name="starred">Starred</string>
     <string name="trashed">Trashed</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="something_went_wrong">Something went wrong</string>
 </resources>
