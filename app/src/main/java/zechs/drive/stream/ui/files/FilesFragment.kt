@@ -1,5 +1,6 @@
 package zechs.drive.stream.ui.files
 
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,7 +10,9 @@ import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -54,6 +57,20 @@ class FilesFragment : Fragment() {
     private var isLoading = false
     private var isScrolling = false
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        startForResult = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK
+                && result.data != null
+            ) {
+                val intent = result.data!!
+                viewModel.handleSignInResult(intent)
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -97,6 +114,11 @@ class FilesFragment : Fragment() {
             } else {
                 binding.pagingLoading.isGone = true
             }
+        }
+
+        viewModel.userAuth.observe(viewLifecycleOwner) { intent ->
+            Log.d(TAG, intent?.data.toString())
+            intent?.let { startForResult.launch(it) }
         }
     }
 

@@ -1,10 +1,12 @@
 package zechs.drive.stream.ui.files
 
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.services.drive.Drive
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -25,6 +27,10 @@ class FilesViewModel @Inject constructor(
         val isAtLast: Boolean,
         val isLoading: Boolean
     )
+
+    private val _userAuth = MutableLiveData<Intent?>()
+    val userAuth: LiveData<Intent?>
+        get() = _userAuth
 
     private val _filesList = MutableLiveData<Resource<List<DriveFile>>>()
     val filesList: LiveData<Resource<List<DriveFile>>>
@@ -63,6 +69,14 @@ class FilesViewModel @Inject constructor(
                 _filesList.postValue(Resource.Error("Unable to build Drive Service"))
                 Log.d(TAG, "Unable to build Drive Service")
             }
+        } catch (user: UserRecoverableAuthIOException) {
+            /*
+             * https://cloud.google.com/java/docs/reference/google-api-client/latest/com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
+             * This is a thing apparently
+             */
+
+            Log.d(TAG, user.message ?: "UserRecoverableAuthIOException")
+            _userAuth.postValue(user.intent)
         } catch (cancel: CancellationException) {
             Log.d(TAG, cancel.message ?: "CancellationException")
         } catch (timeout: SocketTimeoutException) {
@@ -143,6 +157,11 @@ class FilesViewModel @Inject constructor(
     fun setLoadingState(atLastItem: Boolean, isLoading: Boolean) {
         if (_atLastItem.value == LoadingState(atLastItem, isLoading)) return
         _atLastItem.value = LoadingState(atLastItem, isLoading)
+    }
+
+
+    fun handleSignInResult(result: Intent) = viewModelScope.launch {
+        driveHelper.handleSignIn(result)
     }
 
 }
