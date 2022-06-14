@@ -10,9 +10,12 @@ import zechs.drive.stream.databinding.FragmentFilesBinding
 
 class FilesFragment : Fragment() {
 
+    companion object {
+        const val TAG = "FilesFragment"
+    }
+
     private var _binding: FragmentFilesBinding? = null
     private val binding get() = _binding!!
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
