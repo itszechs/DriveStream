@@ -16,7 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -34,12 +33,13 @@ import kotlinx.coroutines.launch
 import zechs.drive.stream.R
 import zechs.drive.stream.data.model.DriveFile
 import zechs.drive.stream.databinding.FragmentFilesBinding
+import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.ui.files.adapter.FilesAdapter
 import zechs.drive.stream.utils.state.Resource
 
 
 @AndroidEntryPoint
-class FilesFragment : Fragment() {
+class FilesFragment : BaseFragment() {
 
     companion object {
         const val TAG = "FilesFragment"

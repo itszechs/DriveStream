@@ -10,9 +10,10 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import zechs.drive.stream.R
 import zechs.drive.stream.databinding.FragmentHomeBinding
+import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.utils.ext.navigateSafe
 
-class HomeFragment : Fragment() {
+class HomeFragment : BaseFragment() {
 
     companion object {
         const val TAG = "HomeFragment"

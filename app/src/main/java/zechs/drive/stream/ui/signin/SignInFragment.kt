@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import zechs.drive.stream.databinding.FragmentSignInBinding
+import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.ui.main.MainViewModel
 
-class SignInFragment : Fragment() {
+class SignInFragment : BaseFragment() {
 
     private var _binding: FragmentSignInBinding? = null
     private val binding get() = _binding!!
