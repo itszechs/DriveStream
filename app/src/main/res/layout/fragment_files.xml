@@ -51,5 +51,9 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
+    <include
+        android:id="@+id/error"
+        layout="@layout/error_layout"
+        android:visibility="gone" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

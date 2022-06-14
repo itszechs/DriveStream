@@ -1,5 +1,6 @@
 package zechs.drive.stream.ui.files
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -47,6 +49,7 @@ class FilesFragment : Fragment() {
         ViewModelProvider(this)[FilesViewModel::class.java]
     }
     private val args by navArgs<FilesFragmentArgs>()
+    private lateinit var startForResult: ActivityResultLauncher<Intent>
 
     private var isLoading = false
     private var isScrolling = false
@@ -104,6 +107,7 @@ class FilesFragment : Fragment() {
             }
             is Resource.Error -> {
                 showSnackBar(response.message)
+                showError(response.message)
             }
             is Resource.Loading -> {
                 isLoading = true
@@ -135,6 +139,19 @@ class FilesFragment : Fragment() {
             binding.rvList.setPadding(0, 0, 0, 0)
         }
 
+        if (files.isEmpty()) {
+            binding.error.apply {
+                root.isVisible = true
+                errorTxt.text = "No files found"
+            }
+        } else {
+            binding.error.root.apply {
+                if (isVisible) {
+                    isGone = true
+                }
+            }
+        }
+
         lifecycleScope.launch {
             filesAdapter.submitList(files.toMutableList())
         }
@@ -151,6 +168,19 @@ class FilesFragment : Fragment() {
             loading.isInvisible = !hide
             rvList.isInvisible = hide
         }
+    }
+
+    private fun showError(msg: String?) {
+        binding.apply {
+            rvList.isInvisible = true
+            loading.isInvisible = true
+            binding.pagingLoading.isGone = true
+            error.apply {
+                root.isVisible = true
+                errorTxt.text = msg ?: getString(R.string.something_went_wrong)
+            }
+        }
+        isLoading = false
     }
 
     private val filesAdapter by lazy {
