@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import dagger.hilt.android.AndroidEntryPoint
@@ -85,6 +86,11 @@ class FilesFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentFilesBinding.bind(view)
+
+        // Workaround for transition animation
+        // https://github.com/material-components/material-components-android/issues/1984
+        val colorBackground = MaterialColors.getColor(view, android.R.attr.colorBackground)
+        view.setBackgroundColor(colorBackground)
 
         binding.toolbar.apply {
             title = args.name
