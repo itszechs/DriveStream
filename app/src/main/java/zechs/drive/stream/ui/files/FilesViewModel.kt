@@ -21,15 +21,27 @@ class FilesViewModel @Inject constructor(
     private val driveHelper: DriveHelper
 ) : ViewModel() {
 
+    data class LoadingState(
+        val isAtLast: Boolean,
+        val isLoading: Boolean
+    )
+
     private val _filesList = MutableLiveData<Resource<List<DriveFile>>>()
     val filesList: LiveData<Resource<List<DriveFile>>>
         get() = _filesList
+
+    private val _atLastItem = MutableLiveData<LoadingState>()
+    val atLastItem: LiveData<LoadingState>
+        get() = _atLastItem
 
     private var nextPageToken: String? = null
     private var response: MutableList<DriveFile>? = null
     private val pageSize = 25
 
     var hasLoaded = false
+
+    var isLastPage = nextPageToken == null
+        private set
 
     fun queryFiles(query: String?) = viewModelScope.launch(Dispatchers.IO) {
         _filesList.postValue(Resource.Loading())
@@ -79,6 +91,7 @@ class FilesViewModel @Inject constructor(
             Log.d(TAG, files.toString())
 
             nextPageToken = files.nextPageToken
+            isLastPage = nextPageToken == null
 
             try {
                 val filesList = files.files.map {
@@ -125,6 +138,11 @@ class FilesViewModel @Inject constructor(
 
             _filesList.postValue(Resource.Success(sharedDrives))
         }
+    }
+
+    fun setLoadingState(atLastItem: Boolean, isLoading: Boolean) {
+        if (_atLastItem.value == LoadingState(atLastItem, isLoading)) return
+        _atLastItem.value = LoadingState(atLastItem, isLoading)
     }
 
 }

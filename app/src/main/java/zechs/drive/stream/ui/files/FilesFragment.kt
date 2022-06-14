@@ -5,9 +5,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isGone
 import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +18,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.AutoTransition
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
@@ -42,6 +47,9 @@ class FilesFragment : Fragment() {
         ViewModelProvider(this)[FilesViewModel::class.java]
     }
     private val args by navArgs<FilesFragmentArgs>()
+
+    private var isLoading = false
+    private var isScrolling = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -79,6 +87,14 @@ class FilesFragment : Fragment() {
         viewModel.filesList.observe(viewLifecycleOwner) { response ->
             handleFilesList(response)
         }
+
+        viewModel.atLastItem.observe(viewLifecycleOwner) {
+            if (it.isLoading && it.isAtLast) {
+                binding.pagingLoading.isVisible = true
+            } else {
+                binding.pagingLoading.isGone = true
+            }
+        }
     }
 
     private fun handleFilesList(response: Resource<List<DriveFile>>) {
@@ -90,8 +106,12 @@ class FilesFragment : Fragment() {
                 showSnackBar(response.message)
             }
             is Resource.Loading -> {
+                isLoading = true
                 if (!viewModel.hasLoaded) {
                     isLoading(true)
+                }
+                if (viewModel.hasLoaded && !viewModel.isLastPage) {
+                    binding.pagingLoading.isVisible = true
                 }
             }
         }
@@ -103,7 +123,17 @@ class FilesFragment : Fragment() {
         }
 
         isLoading(false)
+        isLoading = false
         viewModel.hasLoaded = true
+
+        if (viewModel.isLastPage) {
+            doTransition(
+                transition = AutoTransition().apply {
+                    duration = 200
+                }
+            )
+            binding.rvList.setPadding(0, 0, 0, 0)
+        }
 
         lifecycleScope.launch {
             filesAdapter.submitList(files.toMutableList())
@@ -139,6 +169,35 @@ class FilesFragment : Fragment() {
             // Just showing a SnackBar for the time being...
             showSnackBar("fileId=${file.id}\nfileName:${file.name}")
         }
+
+    }
+
+    private val scrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+
+            val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+            val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+            val visibleItemCount = layoutManager.childCount
+            val totalItemCount = layoutManager.itemCount
+
+            val isAtLastItem = firstVisibleItemPosition + visibleItemCount >= totalItemCount
+            val isLastPage = viewModel.isLastPage
+
+            if (isAtLastItem && !isLoading && !isLastPage && isScrolling) {
+                Log.d(TAG, "Paginating...")
+                viewModel.queryFiles(args.query)
+                isScrolling = false
+            }
+            viewModel.setLoadingState(isAtLastItem, isLoading)
+        }
+
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                isScrolling = true
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -153,6 +212,7 @@ class FilesFragment : Fragment() {
             addItemDecoration(
                 DividerItemDecoration(context, linearLayoutManager.orientation)
             )
+            addOnScrollListener(this@FilesFragment.scrollListener)
         }
     }
 
