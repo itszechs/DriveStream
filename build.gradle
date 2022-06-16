@@ -6,8 +6,8 @@ buildscript {
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.5.0-rc01"
-        classpath "com.google.dagger:hilt-android-gradle-plugin:2.38.1"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.5.0-rc02"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:2.40.1"
     }
 }
 
