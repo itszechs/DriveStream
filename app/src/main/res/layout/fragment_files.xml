@@ -16,10 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:theme="@style/MenuTheme"
-            app:navigationIcon="@drawable/ic_back_arrow_24"
+            app:navigationIcon="@drawable/ic_back_24"
             app:navigationIconTint="@color/textColor"
-            app:subtitleTextAppearance="@style/subtitleTextAppearance"
-            app:subtitleTextColor="@color/textColor_87"
             app:titleTextAppearance="@style/titleTextAppearance"
             app:titleTextColor="@color/textColor_87" />
     </com.google.android.material.appbar.AppBarLayout>
