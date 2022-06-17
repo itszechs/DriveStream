@@ -68,6 +68,9 @@ android {
 }
 
 dependencies {
+    // Exoplayer
+    implementation "com.google.android.exoplayer:exoplayer:2.18.0"
+
     // Datastore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
