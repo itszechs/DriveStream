@@ -29,6 +29,8 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import zechs.drive.stream.R
 import zechs.drive.stream.data.remote.DriveHelper
@@ -63,6 +65,7 @@ class PlayerActivity : AppCompatActivity() {
 
     // Player views
     private lateinit var mainControlsRoot: LinearLayout
+    private lateinit var progressViewGroup: LinearLayout
     private lateinit var toolbar: MaterialToolbar
     private lateinit var btnPlay: MaterialButton
     private lateinit var btnPause: MaterialButton
@@ -71,6 +74,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnChapter: MaterialButton
     private lateinit var btnResize: MaterialButton
     private lateinit var btnPip: MaterialButton
+    private lateinit var btnSpeed: MaterialButton
 
     // Dialogs
     private var audioDialog: Dialog? = null
@@ -80,6 +84,8 @@ class PlayerActivity : AppCompatActivity() {
     // States
     private var onStopCalled = false
 
+    // Configs
+    private var speed = arrayOf("0.25x", "0.5x", "Normal", "1.5x", "2x")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +98,7 @@ class PlayerActivity : AppCompatActivity() {
         playerView = binding.playerView
 
         mainControlsRoot = playerView.findViewById(R.id.mainControls)
+        progressViewGroup = playerView.findViewById(R.id.linearLayout2)
         toolbar = playerView.findViewById(R.id.playerToolbar)
         btnPlay = playerView.findViewById(R.id.btnPlay)
         btnPause = playerView.findViewById(R.id.btnPause)
@@ -99,6 +106,7 @@ class PlayerActivity : AppCompatActivity() {
         btnSubtitle = playerView.findViewById(R.id.btnSubtitle)
         btnChapter = playerView.findViewById(R.id.btnChapter)
         btnResize = playerView.findViewById(R.id.btnResize)
+        btnSpeed = playerView.findViewById(R.id.btnSpeed)
 
         // Back button
         toolbar.setNavigationOnClickListener {
@@ -148,6 +156,28 @@ class PlayerActivity : AppCompatActivity() {
 
         btnPip.setOnClickListener { enterPIPMode() }
 
+        btnSpeed.setOnClickListener {
+            MaterialAlertDialogBuilder(this).apply {
+                setTitle(getString(R.string.select_speed))
+                setItems(speed) { dialog, which ->
+                    val param = when (which) {
+                        0 -> PlaybackParameters(0.25f)  // 0.25x
+                        1 -> PlaybackParameters(0.5f)   // 0.50x
+                        2 -> PlaybackParameters(1.0f)   // 1.00x
+                        3 -> PlaybackParameters(1.25f)   // 1.25x
+                        4 -> PlaybackParameters(1.50f)   // 1.50x
+                        5 -> PlaybackParameters(2.00f)   // 2.00x
+                        else -> PlaybackParameters(1.0f)
+                    }
+                    Log.d(TAG, "Speed=${param.speed}")
+
+                    player.playbackParameters = param
+                    dialog.dismiss()
+                    speedSnackbar(which)
+                }
+                this.show()
+            }
+        }
         initPlayer()
         playMedia()
     }
@@ -391,6 +421,16 @@ class PlayerActivity : AppCompatActivity() {
             controller.hide(WindowInsetsCompat.Type.systemBars())
             controller.systemBarsBehavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
+    }
+
+    private fun speedSnackbar(speedIndex: Int) {
+        Snackbar.make(
+            binding.playerView,
+            "Playback speed set to ${speed[speedIndex]}",
+            /* duration */ 750
+        ).apply {
+            anchorView = progressViewGroup
+        }.also { it.show() }
     }
 
     override fun onPictureInPictureModeChanged(
