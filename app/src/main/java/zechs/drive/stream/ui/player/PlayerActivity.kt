@@ -1,5 +1,6 @@
 package zechs.drive.stream.ui.player
 
+import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -18,7 +19,9 @@ import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory
 import com.google.android.exoplayer2.extractor.ts.TsExtractor
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.material.appbar.MaterialToolbar
@@ -59,6 +62,14 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var toolbar: MaterialToolbar
     private lateinit var btnPlay: MaterialButton
     private lateinit var btnPause: MaterialButton
+    private lateinit var btnAudio: MaterialButton
+    private lateinit var btnSubtitle: MaterialButton
+    private lateinit var btnChapter: MaterialButton
+
+    // Dialogs
+    private var audioDialog: Dialog? = null
+    private var subtitleDialog: Dialog? = null
+    private var chapterDialog: Dialog? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,10 +86,40 @@ class PlayerActivity : AppCompatActivity() {
         toolbar = playerView.findViewById(R.id.playerToolbar)
         btnPlay = playerView.findViewById(R.id.btnPlay)
         btnPause = playerView.findViewById(R.id.btnPause)
+        btnAudio = playerView.findViewById(R.id.btnAudio)
+        btnSubtitle = playerView.findViewById(R.id.btnSubtitle)
+        btnChapter = playerView.findViewById(R.id.btnChapter)
 
         // Back button
         toolbar.setNavigationOnClickListener {
             finish()
+        }
+
+        btnAudio.setOnClickListener {
+            if (audioDialog == null) {
+                audioDialog = initPopupDialog(
+                    btnAudio, getString(R.string.select_audio), C.TRACK_TYPE_AUDIO
+                )
+            }
+            audioDialog?.show()
+        }
+
+        btnSubtitle.setOnClickListener {
+            if (subtitleDialog == null) {
+                subtitleDialog = initPopupDialog(
+                    btnSubtitle, getString(R.string.select_subtitle), C.TRACK_TYPE_TEXT
+                )
+            }
+            subtitleDialog?.show()
+        }
+
+        btnChapter.setOnClickListener {
+            if (chapterDialog == null) {
+                chapterDialog = initPopupDialog(
+                    btnChapter, getString(R.string.chapters), C.TRACK_TYPE_METADATA
+                )
+            }
+            chapterDialog?.show()
         }
 
         initPlayer()
@@ -239,6 +280,74 @@ class PlayerActivity : AppCompatActivity() {
         )
         Log.d(TAG, "STREAM_URL=$uri")
         return uri
+    }
+
+    private fun initPopupDialog(
+        button: MaterialButton,
+        label: String,
+        trackType: @C.TrackType Int
+    ): Dialog? {
+        val mappedTrackInfo = trackSelector.currentMappedTrackInfo
+        var renderer: Int? = null
+
+        if (mappedTrackInfo == null) {
+            return null
+        }
+
+        button.isVisible = true
+
+        for (i in 0 until mappedTrackInfo.rendererCount) {
+            if (isRenderer(mappedTrackInfo, i, trackType)) {
+                renderer = i
+                break
+            }
+        }
+
+        if (renderer == null) {
+            button.isGone = true
+            return null
+        }
+
+        val trackGroups = mutableListOf<Tracks.Group>()
+        player.currentTracks.groups.forEach {
+            if (it.type == trackType) {
+                trackGroups.add(it)
+            }
+        }
+
+        val callbacks = TrackSelectionDialogBuilder.DialogCallback { isDisabled, overrides ->
+            val parametersBuilder = player.trackSelectionParameters
+                .buildUpon()
+                .apply {
+                    setTrackTypeDisabled(trackType, isDisabled)
+                    clearOverridesOfType(trackType)
+                    overrides.values.forEach {
+                        addOverride(it)
+                    }
+                }.build()
+            player.trackSelectionParameters = parametersBuilder
+        }
+
+        return TrackSelectionDialogBuilder(
+            /* context */this,
+            label,
+            trackGroups,
+            callbacks
+        ).also {
+            it.setShowDisableOption(true)
+        }.build()
+    }
+
+    private fun isRenderer(
+        mappedTrackInfo: MappingTrackSelector.MappedTrackInfo,
+        rendererIndex: Int,
+        trackType: @C.TrackType Int
+    ): Boolean {
+        val trackGroupArray = mappedTrackInfo.getTrackGroups(rendererIndex)
+        if (trackGroupArray.length == 0) {
+            return false
+        }
+        return trackType == mappedTrackInfo.getRendererType(rendererIndex)
     }
 
     private fun hideSystemUI() {

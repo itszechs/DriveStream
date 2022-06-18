@@ -15,4 +15,7 @@
     <string name="pip_mode">PiP Mode</string>
     <string name="rotate">Rotate</string>
     <string name="unknown">Unknown</string>
+    <string name="select_subtitle">Select subtitle track</string>
+    <string name="select_audio">Select audio track</string>
+    <string name="select_speed">Select playback speed</string>
 </resources>
