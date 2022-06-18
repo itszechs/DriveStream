@@ -4,11 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.animation.AccelerateInterpolator
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.*
 import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
@@ -19,7 +21,9 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
+import zechs.drive.stream.R
 import zechs.drive.stream.data.remote.DriveHelper
 import zechs.drive.stream.databinding.ActivityPlayerBinding
 import zechs.drive.stream.ui.player.utils.AuthenticatingDataSource
@@ -48,6 +52,11 @@ class PlayerActivity : AppCompatActivity() {
     @Suppress("DEPRECATION")
     private lateinit var playerView: PlayerView
 
+    // Player views
+    private lateinit var mainControlsRoot: LinearLayout
+    private lateinit var btnPlay: MaterialButton
+    private lateinit var btnPause: MaterialButton
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +68,10 @@ class PlayerActivity : AppCompatActivity() {
 
         playerView = binding.playerView
 
+        mainControlsRoot = playerView.findViewById(R.id.mainControls)
+        btnPlay = playerView.findViewById(R.id.btnPlay)
+        btnPause = playerView.findViewById(R.id.btnPause)
+
         initPlayer()
         playMedia()
     }
@@ -66,6 +79,41 @@ class PlayerActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         playMedia()
+    }
+
+    private val playerListener = object : Player.Listener {
+
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            if (playbackState == Player.STATE_READY) {
+                btnPlay.setOnClickListener {
+                    player.playWhenReady = true
+                }
+
+                btnPause.setOnClickListener {
+                    player.playWhenReady = false
+                }
+
+            }
+        }
+
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            TransitionManager.beginDelayedTransition(
+                mainControlsRoot,
+                AutoTransition().apply {
+                    interpolator = AccelerateInterpolator()
+                    duration = 150L
+                }
+            )
+            if (isPlaying) {
+                btnPlay.isGone = true
+                btnPause.isVisible = true
+            } else {
+                btnPlay.isVisible = true
+                btnPause.isGone = true
+            }
+            Log.d(TAG, "isPlaying=${isPlaying}")
+        }
+
     }
 
     private fun initPlayer() {
@@ -113,6 +161,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun releasePlayer() {
+        player.removeListener(playerListener)
         player.clearMediaItems()
         player.release()
         playerView.player = null
@@ -138,6 +187,7 @@ class PlayerActivity : AppCompatActivity() {
                 .build()
 
             player.apply {
+                addListener(playerListener)
                 setAudioAttributes(audioAttributes, true)
                 addMediaItem(mediaItem)
                 prepare()
