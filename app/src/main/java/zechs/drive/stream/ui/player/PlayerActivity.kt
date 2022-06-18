@@ -1,7 +1,9 @@
 package zechs.drive.stream.ui.player
 
 import android.app.Dialog
+import android.app.PictureInPictureParams
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -68,11 +70,15 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnSubtitle: MaterialButton
     private lateinit var btnChapter: MaterialButton
     private lateinit var btnResize: MaterialButton
+    private lateinit var btnPip: MaterialButton
 
     // Dialogs
     private var audioDialog: Dialog? = null
     private var subtitleDialog: Dialog? = null
     private var chapterDialog: Dialog? = null
+
+    // States
+    private var onStopCalled = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -140,6 +146,8 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
 
+        btnPip.setOnClickListener { enterPIPMode() }
+
         initPlayer()
         playMedia()
     }
@@ -147,6 +155,14 @@ class PlayerActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         playMedia()
+    }
+
+    private fun enterPIPMode() {
+        this.enterPictureInPictureMode(
+            PictureInPictureParams
+                .Builder()
+                .build()
+        )
     }
 
     private val playerListener = object : Player.Listener {
@@ -377,9 +393,36 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPictureInPictureModeChanged(
+        isInPictureInPictureMode: Boolean,
+        newConfig: Configuration?
+    ) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        playerView.apply {
+            controllerAutoShow = !isInPictureInPictureMode
+            if (isInPictureInPictureMode) hideController() else showController()
+        }
+        if (onStopCalled) {
+            finish()
+        }
+    }
+
     override fun onPause() {
         super.onPause()
-        player.pause()
+        Log.d(TAG, "isInPictureInPictureMode=$isInPictureInPictureMode")
+        if (!isInPictureInPictureMode) {
+            player.pause()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        onStopCalled = true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        onStopCalled = false
     }
 
     override fun onDestroy() {
