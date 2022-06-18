@@ -10,7 +10,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory
@@ -23,6 +22,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import dagger.hilt.android.AndroidEntryPoint
 import zechs.drive.stream.data.remote.DriveHelper
 import zechs.drive.stream.databinding.ActivityPlayerBinding
+import zechs.drive.stream.ui.player.utils.AuthenticatingDataSource
 import javax.inject.Inject
 
 
@@ -95,12 +95,12 @@ class PlayerActivity : AppCompatActivity() {
                 .build()
         }
 
-        val httpDataSourceFactory = DefaultHttpDataSource
-            .Factory()
-            .setAllowCrossProtocolRedirects(true)
-
         dataSourceFactory = DataSource.Factory {
-            httpDataSourceFactory.createDataSource()
+            val dataSource = DefaultHttpDataSource.Factory()
+
+            AuthenticatingDataSource
+                .Factory(dataSource, driveHelper)
+                .createDataSource()
         }
 
         player = ExoPlayer.Builder(this, rendererFactory)
