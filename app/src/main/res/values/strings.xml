@@ -20,4 +20,6 @@
     <string name="select_speed">Select playback speed</string>
     <string name="portrait">Portrait</string>
     <string name="landscape">Landscape</string>
+    <string name="ok">OK</string>
+    <string name="details">Details</string>
 </resources>

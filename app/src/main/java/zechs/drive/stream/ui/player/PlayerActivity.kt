@@ -16,14 +16,17 @@ import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_B
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.ExoPlaybackException.*
+import com.google.android.exoplayer2.Format.NO_VALUE
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory
 import com.google.android.exoplayer2.extractor.ts.TsExtractor
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.MappingTrackSelector
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector.MappedTrackInfo
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.upstream.DataSource
@@ -89,6 +92,7 @@ class PlayerActivity : AppCompatActivity() {
     private var speed = arrayOf("0.25x", "0.5x", "Normal", "1.5x", "2x")
     private var orientation = Orientation.LANDSCAPE
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -108,6 +112,7 @@ class PlayerActivity : AppCompatActivity() {
         btnSubtitle = playerView.findViewById(R.id.btnSubtitle)
         btnChapter = playerView.findViewById(R.id.btnChapter)
         btnResize = playerView.findViewById(R.id.btnResize)
+        btnPip = playerView.findViewById(R.id.btnPip)
         btnSpeed = playerView.findViewById(R.id.btnSpeed)
         btnRotate = playerView.findViewById(R.id.btnRotate)
 
@@ -151,9 +156,9 @@ class PlayerActivity : AppCompatActivity() {
                 }
             )
             playerView.apply {
-                resizeMode = if (resizeMode == AspectRatioFrameLayout.RESIZE_MODE_FIT) {
-                    AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-                } else AspectRatioFrameLayout.RESIZE_MODE_FIT
+                resizeMode = if (resizeMode == RESIZE_MODE_FIT) {
+                    RESIZE_MODE_ZOOM
+                } else RESIZE_MODE_FIT
             }
         }
 
@@ -213,7 +218,7 @@ class PlayerActivity : AppCompatActivity() {
                 var subtitleText = ""
 
                 player.videoFormat?.let {
-                    if (it.width != Format.NO_VALUE && it.height != Format.NO_VALUE) {
+                    if (it.width != NO_VALUE && it.height != NO_VALUE) {
                         subtitleText += "${it.width}x${it.height} - "
                     }
                     // frameRate can return NO_VALUE, which is a int
@@ -266,6 +271,12 @@ class PlayerActivity : AppCompatActivity() {
             Log.d(TAG, "isPlaying=${isPlaying}")
         }
 
+        override fun onPlayerError(error: PlaybackException) {
+            super.onPlayerError(error)
+            if (error is ExoPlaybackException) {
+                showError(error)
+            }
+        }
     }
 
     private fun initPlayer() {
@@ -440,7 +451,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun isRenderer(
-        mappedTrackInfo: MappingTrackSelector.MappedTrackInfo,
+        mappedTrackInfo: MappedTrackInfo,
         rendererIndex: Int,
         trackType: @C.TrackType Int
     ): Boolean {
@@ -466,6 +477,37 @@ class PlayerActivity : AppCompatActivity() {
             /* duration */ 750
         ).apply {
             anchorView = progressViewGroup
+        }.also { it.show() }
+    }
+
+    private fun showError(error: ExoPlaybackException) {
+        val errorGeneral = error.localizedMessage ?: getString(R.string.something_went_wrong)
+        val errorDetailed = when (error.type) {
+            TYPE_SOURCE -> error.sourceException.localizedMessage
+            TYPE_RENDERER -> error.rendererException.localizedMessage
+            TYPE_UNEXPECTED -> error.unexpectedException.localizedMessage
+            TYPE_REMOTE -> errorGeneral
+            else -> errorGeneral
+        }
+        errorSnackbar(errorGeneral, errorDetailed)
+    }
+
+    private fun errorSnackbar(textPrimary: String, textSecondary: String?) {
+        Snackbar.make(playerView, textPrimary, Snackbar.LENGTH_LONG).apply {
+            anchorView = progressViewGroup
+
+            if (textSecondary != null) {
+                setAction(getString(R.string.details)) {
+                    MaterialAlertDialogBuilder(
+                        this@PlayerActivity
+                    ).apply {
+                        setMessage(textSecondary)
+                        setPositiveButton(R.string.ok) { dialog, _ -> dialog.dismiss() }
+                        create()
+                    }.also { it.show() }
+                }
+            }
+
         }.also { it.show() }
     }
 
