@@ -36,6 +36,7 @@ import zechs.drive.stream.data.model.DriveFile
 import zechs.drive.stream.databinding.FragmentFilesBinding
 import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.ui.files.adapter.FilesAdapter
+import zechs.drive.stream.ui.player.PlayerActivity
 import zechs.drive.stream.utils.state.Resource
 
 
@@ -223,9 +224,14 @@ class FilesFragment : BaseFragment() {
                 query = "'${file.id}' in parents and trashed=false"
             )
             findNavController().navigate(action)
-        } else {
-            // Just showing a SnackBar for the time being...
-            showSnackBar("fileId=${file.id}\nfileName:${file.name}")
+        } else if (file.isVideoFile) {
+            Intent(
+                context, PlayerActivity::class.java
+            ).apply {
+                putExtra("fileId", file.id)
+                putExtra("title", file.name)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }.also { startActivity(it) }
         }
 
     }
