@@ -20,6 +20,7 @@ import com.google.android.exoplayer2.extractor.ts.TsExtractor
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.google.android.exoplayer2.upstream.DataSource
@@ -66,6 +67,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnAudio: MaterialButton
     private lateinit var btnSubtitle: MaterialButton
     private lateinit var btnChapter: MaterialButton
+    private lateinit var btnResize: MaterialButton
 
     // Dialogs
     private var audioDialog: Dialog? = null
@@ -90,6 +92,7 @@ class PlayerActivity : AppCompatActivity() {
         btnAudio = playerView.findViewById(R.id.btnAudio)
         btnSubtitle = playerView.findViewById(R.id.btnSubtitle)
         btnChapter = playerView.findViewById(R.id.btnChapter)
+        btnResize = playerView.findViewById(R.id.btnResize)
 
         // Back button
         toolbar.setNavigationOnClickListener {
@@ -121,6 +124,20 @@ class PlayerActivity : AppCompatActivity() {
                 )
             }
             chapterDialog?.show()
+        }
+
+        btnResize.setOnClickListener {
+            TransitionManager.beginDelayedTransition(
+                playerView, AutoTransition().apply {
+                    interpolator = AccelerateInterpolator()
+                    duration = 250
+                }
+            )
+            playerView.apply {
+                resizeMode = if (resizeMode == AspectRatioFrameLayout.RESIZE_MODE_FIT) {
+                    AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                } else AspectRatioFrameLayout.RESIZE_MODE_FIT
+            }
         }
 
         initPlayer()
