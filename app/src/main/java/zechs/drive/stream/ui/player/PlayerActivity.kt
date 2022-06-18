@@ -21,6 +21,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import zechs.drive.stream.R
@@ -28,6 +29,7 @@ import zechs.drive.stream.data.remote.DriveHelper
 import zechs.drive.stream.databinding.ActivityPlayerBinding
 import zechs.drive.stream.ui.player.utils.AuthenticatingDataSource
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint
@@ -54,6 +56,7 @@ class PlayerActivity : AppCompatActivity() {
 
     // Player views
     private lateinit var mainControlsRoot: LinearLayout
+    private lateinit var toolbar: MaterialToolbar
     private lateinit var btnPlay: MaterialButton
     private lateinit var btnPause: MaterialButton
 
@@ -69,8 +72,14 @@ class PlayerActivity : AppCompatActivity() {
         playerView = binding.playerView
 
         mainControlsRoot = playerView.findViewById(R.id.mainControls)
+        toolbar = playerView.findViewById(R.id.playerToolbar)
         btnPlay = playerView.findViewById(R.id.btnPlay)
         btnPause = playerView.findViewById(R.id.btnPause)
+
+        // Back button
+        toolbar.setNavigationOnClickListener {
+            finish()
+        }
 
         initPlayer()
         playMedia()
@@ -85,6 +94,23 @@ class PlayerActivity : AppCompatActivity() {
 
         override fun onPlaybackStateChanged(playbackState: Int) {
             if (playbackState == Player.STATE_READY) {
+                var subtitleText = ""
+
+                player.videoFormat?.let {
+                    if (it.width != Format.NO_VALUE && it.height != Format.NO_VALUE) {
+                        subtitleText += "${it.width}x${it.height} - "
+                    }
+                    // frameRate can return NO_VALUE, which is a int
+                    // can't compare it against float.
+                    if (it.frameRate > 0) {
+                        val rounded = (it.frameRate * 100.0).roundToInt() / 100.0
+                        subtitleText += "${rounded}fps - "
+                    }
+                    it.codecs?.let { codec ->
+                        subtitleText += codec
+                    }
+                }
+
                 btnPlay.setOnClickListener {
                     player.playWhenReady = true
                 }
@@ -93,6 +119,16 @@ class PlayerActivity : AppCompatActivity() {
                     player.playWhenReady = false
                 }
 
+                if (toolbar.title.isNullOrEmpty()) {
+                    toolbar.title = player.mediaMetadata.title
+                }
+
+                if (toolbar.title.isNullOrEmpty()) {
+                    // if `player.mediaMetadata.title` was empty
+                    toolbar.title = getString(R.string.unknown)
+                }
+
+                toolbar.subtitle = subtitleText
             }
         }
 
@@ -169,7 +205,8 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun playMedia() {
         val fileId = intent.getStringExtra("fileId")
-        val title = intent.getStringExtra("title")
+
+        toolbar.title = intent.getStringExtra("title")
 
         playerView.apply {
             player = this@PlayerActivity.player

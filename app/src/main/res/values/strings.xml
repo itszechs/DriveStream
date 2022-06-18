@@ -14,4 +14,5 @@
     <string name="resize">Resize</string>
     <string name="pip_mode">PiP Mode</string>
     <string name="rotate">Rotate</string>
+    <string name="unknown">Unknown</string>
 </resources>
