@@ -18,4 +18,6 @@
     <string name="select_subtitle">Select subtitle track</string>
     <string name="select_audio">Select audio track</string>
     <string name="select_speed">Select playback speed</string>
+    <string name="portrait">Portrait</string>
+    <string name="landscape">Landscape</string>
 </resources>

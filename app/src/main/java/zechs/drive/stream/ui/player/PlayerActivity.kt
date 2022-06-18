@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.animation.AccelerateInterpolator
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 import androidx.transition.AutoTransition
@@ -35,8 +36,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import zechs.drive.stream.R
 import zechs.drive.stream.data.remote.DriveHelper
 import zechs.drive.stream.databinding.ActivityPlayerBinding
-import zechs.drive.stream.ui.player.utils.AuthenticatingDataSource
-import zechs.drive.stream.ui.player.utils.CustomTrackNameProvider
+import zechs.drive.stream.ui.player.utils.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -75,6 +75,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnResize: MaterialButton
     private lateinit var btnPip: MaterialButton
     private lateinit var btnSpeed: MaterialButton
+    private lateinit var btnRotate: MaterialButton
 
     // Dialogs
     private var audioDialog: Dialog? = null
@@ -86,6 +87,7 @@ class PlayerActivity : AppCompatActivity() {
 
     // Configs
     private var speed = arrayOf("0.25x", "0.5x", "Normal", "1.5x", "2x")
+    private var orientation = Orientation.LANDSCAPE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,6 +109,7 @@ class PlayerActivity : AppCompatActivity() {
         btnChapter = playerView.findViewById(R.id.btnChapter)
         btnResize = playerView.findViewById(R.id.btnResize)
         btnSpeed = playerView.findViewById(R.id.btnSpeed)
+        btnRotate = playerView.findViewById(R.id.btnRotate)
 
         // Back button
         toolbar.setNavigationOnClickListener {
@@ -178,6 +181,14 @@ class PlayerActivity : AppCompatActivity() {
                 this.show()
             }
         }
+
+        btnRotate.setOnClickListener {
+            orientation = getNextOrientation(orientation)
+            Log.d(TAG, "orientation=${orientation}")
+            setOrientation(this@PlayerActivity, orientation)
+        }
+
+        updateOrientation(resources.configuration)
         initPlayer()
         playMedia()
     }
@@ -346,6 +357,31 @@ class PlayerActivity : AppCompatActivity() {
         return uri
     }
 
+    private fun updateOrientation(newConfig: Configuration) {
+        when (newConfig.orientation) {
+            Configuration.ORIENTATION_PORTRAIT -> {
+                btnRotate.apply {
+                    orientation = Orientation.PORTRAIT
+                    tooltipText = getString(R.string.landscape)
+                    icon = ContextCompat.getDrawable(
+                        /* context */ this@PlayerActivity,
+                        /* drawableId */ R.drawable.ic_landscape_24
+                    )
+                }
+            }
+            else -> {
+                btnRotate.apply {
+                    orientation = Orientation.LANDSCAPE
+                    tooltipText = getString(R.string.portrait)
+                    icon = ContextCompat.getDrawable(
+                        /* context */ this@PlayerActivity,
+                        /* drawableId */ R.drawable.ic_portrait_24
+                    )
+                }
+            }
+        }
+    }
+
     private fun initPopupDialog(
         button: MaterialButton,
         label: String,
@@ -445,6 +481,11 @@ class PlayerActivity : AppCompatActivity() {
         if (onStopCalled) {
             finish()
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateOrientation(newConfig)
     }
 
     override fun onPause() {
