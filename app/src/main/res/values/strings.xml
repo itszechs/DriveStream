@@ -7,4 +7,11 @@
     <string name="shared_with_me">Shared with me</string>
     <string name="starred">Starred</string>
     <string name="trashed">Trashed</string>
+    <string name="chapters">Chapters</string>
+    <string name="subtitles">Subtitles</string>
+    <string name="audio">Audio</string>
+    <string name="playback_speed">Playback speed</string>
+    <string name="resize">Resize</string>
+    <string name="pip_mode">PiP Mode</string>
+    <string name="rotate">Rotate</string>
 </resources>
