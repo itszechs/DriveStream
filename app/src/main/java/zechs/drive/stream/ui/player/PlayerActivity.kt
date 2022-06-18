@@ -31,6 +31,7 @@ import zechs.drive.stream.R
 import zechs.drive.stream.data.remote.DriveHelper
 import zechs.drive.stream.databinding.ActivityPlayerBinding
 import zechs.drive.stream.ui.player.utils.AuthenticatingDataSource
+import zechs.drive.stream.ui.player.utils.CustomTrackNameProvider
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -335,6 +336,7 @@ class PlayerActivity : AppCompatActivity() {
             callbacks
         ).also {
             it.setShowDisableOption(true)
+            it.setTrackNameProvider(CustomTrackNameProvider(resources))
         }.build()
     }
 
