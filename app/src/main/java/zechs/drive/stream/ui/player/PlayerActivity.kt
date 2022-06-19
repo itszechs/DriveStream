@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_B
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON
 import com.google.android.exoplayer2.ExoPlaybackException.*
 import com.google.android.exoplayer2.Format.NO_VALUE
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -285,6 +286,7 @@ class PlayerActivity : AppCompatActivity() {
             .setTsExtractorTimestampSearchBytes(1500 * TsExtractor.TS_PACKET_SIZE)
 
         val rendererFactory = DefaultRenderersFactory(this)
+            .setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON)
 
         // handles the duration of media to retain in the buffer prior
         // to the current playback position

@@ -68,6 +68,8 @@ android {
 }
 
 dependencies {
+    implementation fileTree(dir: "libs", include: ["extension-*.aar"])
+
     // Exoplayer
     implementation "com.google.android.exoplayer:exoplayer:2.18.0"
 
