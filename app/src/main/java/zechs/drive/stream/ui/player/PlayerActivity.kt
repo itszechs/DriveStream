@@ -297,10 +297,10 @@ class PlayerActivity : AppCompatActivity() {
         // handles the duration of media to retain in the buffer
         val loadControl = DefaultLoadControl.Builder()
             .setBufferDurationsMs(
-                DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
-                50 * 1000, // buffering goal, s -> ms
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+                BufferConfig.MIN_BUFFER_DURATION,
+                BufferConfig.MAX_BUFFER_DURATION,
+                BufferConfig.MIN_PLAYBACK_START_BUFFER,
+                BufferConfig.MIN_PLAYBACK_RESUME_BUFFER
             )
             .build()
 
