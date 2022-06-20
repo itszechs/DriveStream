@@ -215,6 +215,12 @@ class PlayerActivity : AppCompatActivity() {
     private val playerListener = object : Player.Listener {
 
         override fun onPlaybackStateChanged(playbackState: Int) {
+            // Prevent screen from timing-out when video is playing
+            playerView.keepScreenOn = when (playbackState) {
+                Player.STATE_BUFFERING, Player.STATE_READY -> true
+                else -> false
+            }
+
             if (playbackState == Player.STATE_READY) {
                 var subtitleText = ""
 
