@@ -294,17 +294,13 @@ class PlayerActivity : AppCompatActivity() {
         val rendererFactory = DefaultRenderersFactory(this)
             .setExtensionRendererMode(EXTENSION_RENDERER_MODE_ON)
 
-        // handles the duration of media to retain in the buffer prior
-        // to the current playback position
-        // (for fast backward seeking)
+        // handles the duration of media to retain in the buffer
         val loadControl = DefaultLoadControl.Builder()
-            // cache the last three minutes
-            .setBackBuffer(1000 * 60 * 3, true)
             .setBufferDurationsMs(
-                DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
-                50 * 1000, // buffering goal, s -> ms
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+                BufferConfig.MIN_BUFFER_DURATION,
+                BufferConfig.MAX_BUFFER_DURATION,
+                BufferConfig.MIN_PLAYBACK_START_BUFFER,
+                BufferConfig.MIN_PLAYBACK_RESUME_BUFFER
             )
             .build()
 
