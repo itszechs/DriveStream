@@ -538,17 +538,10 @@ class PlayerActivity : AppCompatActivity() {
         updateOrientation(newConfig)
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "isInPictureInPictureMode=$isInPictureInPictureMode")
-        if (!isInPictureInPictureMode) {
-            player.pause()
-        }
-    }
-
     override fun onStop() {
         super.onStop()
         onStopCalled = true
+        player.pause()
     }
 
     override fun onResume() {
