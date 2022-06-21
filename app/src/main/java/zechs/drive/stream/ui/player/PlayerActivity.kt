@@ -90,7 +90,7 @@ class PlayerActivity : AppCompatActivity() {
     private var onStopCalled = false
 
     // Configs
-    private var speed = arrayOf("0.25x", "0.5x", "Normal", "1.5x", "2x")
+    private var speed = arrayOf("0.25x", "0.5x", "Normal", "1.25x", "1.5x", "2x")
     private var orientation = Orientation.LANDSCAPE
 
 
