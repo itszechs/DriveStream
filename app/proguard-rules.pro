@@ -19,3 +19,17 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# To remove Log messages
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+}
+
+# keep data-classes from google.api
+-keep class * extends com.google.api.client.json.GenericJson {
+    *;
+}
+-keep class com.google.api.services.drive.** {
+    *;
+}
