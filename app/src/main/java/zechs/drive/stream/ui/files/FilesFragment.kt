@@ -23,7 +23,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.AutoTransition
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import com.google.android.material.color.MaterialColors
@@ -36,6 +35,7 @@ import zechs.drive.stream.data.model.DriveFile
 import zechs.drive.stream.databinding.FragmentFilesBinding
 import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.ui.files.adapter.FilesAdapter
+import zechs.drive.stream.ui.files.adapter.FilesDataModel
 import zechs.drive.stream.ui.player.PlayerActivity
 import zechs.drive.stream.utils.state.Resource
 
@@ -115,21 +115,13 @@ class FilesFragment : BaseFragment() {
             handleFilesList(response)
         }
 
-        viewModel.atLastItem.observe(viewLifecycleOwner) {
-            if (it.isLoading && it.isAtLast) {
-                binding.pagingLoading.isVisible = true
-            } else {
-                binding.pagingLoading.isGone = true
-            }
-        }
-
         viewModel.userAuth.observe(viewLifecycleOwner) { intent ->
             Log.d(TAG, intent?.data.toString())
             intent?.let { startForResult.launch(it) }
         }
     }
 
-    private fun handleFilesList(response: Resource<List<DriveFile>>) {
+    private fun handleFilesList(response: Resource<List<FilesDataModel>>) {
         when (response) {
             is Resource.Success -> response.data?.let { files ->
                 onSuccess(files)
@@ -143,14 +135,11 @@ class FilesFragment : BaseFragment() {
                 if (!viewModel.hasLoaded) {
                     isLoading(true)
                 }
-                if (viewModel.hasLoaded && !viewModel.isLastPage) {
-                    binding.pagingLoading.isVisible = true
-                }
             }
         }
     }
 
-    private fun onSuccess(files: List<DriveFile>) {
+    private fun onSuccess(files: List<FilesDataModel>) {
         if (!viewModel.hasLoaded) {
             doTransition(MaterialFadeThrough())
         }
@@ -158,15 +147,6 @@ class FilesFragment : BaseFragment() {
         isLoading(false)
         isLoading = false
         viewModel.hasLoaded = true
-
-        if (viewModel.isLastPage) {
-            doTransition(
-                transition = AutoTransition().apply {
-                    duration = 200
-                }
-            )
-            binding.rvList.setPadding(0, 0, 0, 0)
-        }
 
         if (files.isEmpty()) {
             binding.error.apply {
@@ -203,7 +183,6 @@ class FilesFragment : BaseFragment() {
         binding.apply {
             rvList.isInvisible = true
             loading.isInvisible = true
-            binding.pagingLoading.isGone = true
             error.apply {
                 root.isVisible = true
                 errorTxt.text = msg ?: getString(R.string.something_went_wrong)
@@ -253,7 +232,6 @@ class FilesFragment : BaseFragment() {
                 viewModel.queryFiles(args.query)
                 isScrolling = false
             }
-            viewModel.setLoadingState(isAtLastItem, isLoading)
         }
 
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {

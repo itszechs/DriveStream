@@ -2,44 +2,57 @@ package zechs.drive.stream.ui.files.adapter
 
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.request.RequestOptions
 import zechs.drive.stream.R
-import zechs.drive.stream.data.model.DriveFile
 import zechs.drive.stream.databinding.ItemDriveFileBinding
+import zechs.drive.stream.databinding.ItemLoadingBinding
 import zechs.drive.stream.utils.GlideApp
 
-class FilesViewHolder(
-    private val itemBinding: ItemDriveFileBinding,
-    val filesAdapter: FilesAdapter
-) : RecyclerView.ViewHolder(itemBinding.root) {
+sealed class FilesViewHolder(
+    binding: ViewBinding
+) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: DriveFile) {
-        itemBinding.apply {
 
-            val iconLink = item.iconLink128 ?: R.drawable.ic_my_drive_24
+    class DriveFileViewHolder(
+        private val itemBinding: ItemDriveFileBinding,
+        val filesAdapter: FilesAdapter
+    ) : FilesViewHolder(itemBinding) {
 
-            GlideApp.with(ivFileType)
-                .load(iconLink)
-                .apply(RequestOptions().override(48, 48))
-                .into(ivFileType)
+        fun bind(file: FilesDataModel.File) {
+            val item = file.driveFile
+            itemBinding.apply {
 
-            tvFileName.text = item.name
+                val iconLink = item.iconLink128 ?: R.drawable.ic_my_drive_24
 
-            val tvFileSizeTAG = "tvFileSize"
+                GlideApp.with(ivFileType)
+                    .load(iconLink)
+                    .apply(RequestOptions().override(48, 48))
+                    .into(ivFileType)
 
-            tvFileSize.apply {
-                tag = if (item.size == null) {
-                    tvFileSizeTAG
-                } else null
+                tvFileName.text = item.name
 
-                isGone = tag == tvFileSizeTAG
-                text = item.humanSize
+                val tvFileSizeTAG = "tvFileSize"
+
+                tvFileSize.apply {
+                    tag = if (item.size == null) {
+                        tvFileSizeTAG
+                    } else null
+
+                    isGone = tag == tvFileSizeTAG
+                    text = item.humanSize
+                }
+
+                root.setOnClickListener {
+                    filesAdapter.onClickListener.invoke(item)
+                }
+
             }
-
-            root.setOnClickListener {
-                filesAdapter.onClickListener.invoke(item)
-            }
-
         }
     }
+
+    class LoadingViewHolder(
+        itemBinding: ItemLoadingBinding
+    ) : FilesViewHolder(itemBinding)
+
 }
