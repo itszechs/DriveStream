@@ -85,7 +85,10 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["extension-*.aar"])
 
     // Exoplayer
-    implementation "com.google.android.exoplayer:exoplayer:2.18.0"
+    def exoplayer_version = "2.18.0"
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-dash:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
 
     // Datastore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
