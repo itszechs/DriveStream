@@ -132,8 +132,13 @@ class FilesFragment : BaseFragment() {
             }
             is Resource.Loading -> {
                 isLoading = true
-                if (!viewModel.hasLoaded) {
+                if (!viewModel.hasLoaded || viewModel.hasFailed) {
                     isLoading(true)
+                }
+                binding.error.root.apply {
+                    if (isVisible) {
+                        isGone = true
+                    }
                 }
             }
         }
@@ -186,6 +191,12 @@ class FilesFragment : BaseFragment() {
             error.apply {
                 root.isVisible = true
                 errorTxt.text = msg ?: getString(R.string.something_went_wrong)
+                btnRetry.apply {
+                    isVisible = true
+                    setOnClickListener {
+                        viewModel.queryFiles(args.query)
+                    }
+                }
             }
         }
         isLoading = false

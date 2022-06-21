@@ -38,6 +38,9 @@ class FilesViewModel @Inject constructor(
 
     var hasLoaded = false
 
+    var hasFailed = false
+        private set
+
     var isLastPage = nextPageToken == null
         private set
 
@@ -57,6 +60,7 @@ class FilesViewModel @Inject constructor(
                 } else {
                     getTeamDrives(drive)
                 }
+                hasFailed = false
             } else {
                 _filesList.postValue(Resource.Error("Unable to build Drive Service"))
                 Log.d(TAG, "Unable to build Drive Service")
@@ -78,6 +82,7 @@ class FilesViewModel @Inject constructor(
             _filesList.postValue(Resource.Error(e.message ?: "Something went wrong"))
             Log.e(TAG, "Something went wrong", e)
         }
+        hasFailed = true
     }
 
     private suspend fun getQuery(drive: Drive, query: String) {
