@@ -2,7 +2,7 @@
 
 Google drive client with only one purpose that is to stream video files unlike the official app, this app streams the actual files instead of transcoded streams.
 
-This app is powered by [Google Identiy SDK](https://developers.google.com/identity/sign-in/android/start-integrating) and [ExoPlayer](https://github.com/google/ExoPlayer).
+This app is powered by [Google Identity SDK](https://developers.google.com/identity/sign-in/android/start-integrating) and [ExoPlayer](https://github.com/google/ExoPlayer).
 
 ## Screenshots
 
