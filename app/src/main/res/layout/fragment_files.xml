@@ -27,7 +27,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="72dp"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
     <ProgressBar
@@ -37,16 +36,6 @@
         android:layout_gravity="center"
         android:elevation="24dp"
         android:visibility="invisible"
-        tools:visibility="visible" />
-
-    <ProgressBar
-        android:id="@+id/pagingLoading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="8dp"
-        android:elevation="24dp"
-        android:visibility="gone"
         tools:visibility="visible" />
 
     <include

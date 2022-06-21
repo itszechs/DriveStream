@@ -1,16 +1,28 @@
 package zechs.drive.stream.ui.files.adapter
 
 import androidx.recyclerview.widget.DiffUtil
-import zechs.drive.stream.data.model.DriveFile
 
-class FilesItemDiffCallback : DiffUtil.ItemCallback<DriveFile>() {
+class FilesItemDiffCallback : DiffUtil.ItemCallback<FilesDataModel>() {
+
 
     override fun areItemsTheSame(
-        oldItem: DriveFile, newItem: DriveFile
-    ) = oldItem.id == newItem.id
+        oldItem: FilesDataModel,
+        newItem: FilesDataModel
+    ): Boolean = when {
+
+        oldItem is FilesDataModel.Loading && newItem is FilesDataModel.Loading
+                && oldItem == newItem
+        -> true
+
+        oldItem is FilesDataModel.File && newItem is FilesDataModel.File &&
+                oldItem.driveFile.id == newItem.driveFile.id
+        -> true
+
+        else -> false
+    }
 
     override fun areContentsTheSame(
-        oldItem: DriveFile, newItem: DriveFile
+        oldItem: FilesDataModel, newItem: FilesDataModel
     ) = oldItem == newItem
 
 }

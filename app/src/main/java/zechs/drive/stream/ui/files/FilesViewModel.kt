@@ -13,6 +13,7 @@ import kotlinx.coroutines.*
 import zechs.drive.stream.data.model.DriveFile
 import zechs.drive.stream.data.remote.DriveHelper
 import zechs.drive.stream.ui.files.FilesFragment.Companion.TAG
+import zechs.drive.stream.ui.files.adapter.FilesDataModel
 import zechs.drive.stream.utils.state.Resource
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -23,25 +24,16 @@ class FilesViewModel @Inject constructor(
     private val driveHelper: DriveHelper
 ) : ViewModel() {
 
-    data class LoadingState(
-        val isAtLast: Boolean,
-        val isLoading: Boolean
-    )
-
     private val _userAuth = MutableLiveData<Intent?>()
     val userAuth: LiveData<Intent?>
         get() = _userAuth
 
-    private val _filesList = MutableLiveData<Resource<List<DriveFile>>>()
-    val filesList: LiveData<Resource<List<DriveFile>>>
+    private val _filesList = MutableLiveData<Resource<List<FilesDataModel>>>()
+    val filesList: LiveData<Resource<List<FilesDataModel>>>
         get() = _filesList
 
-    private val _atLastItem = MutableLiveData<LoadingState>()
-    val atLastItem: LiveData<LoadingState>
-        get() = _atLastItem
-
     private var nextPageToken: String? = null
-    private var response: MutableList<DriveFile>? = null
+    private var response: MutableList<FilesDataModel>? = null
     private val pageSize = 25
 
     var hasLoaded = false
@@ -55,7 +47,7 @@ class FilesViewModel @Inject constructor(
             val drive = driveHelper.drive
             if (drive != null) {
                 /**
-                 * Ensures that current scope
+                 * Ensures that current scope is active
                  * else throw CancellationException
                  */
                 ensureActive()
@@ -107,6 +99,8 @@ class FilesViewModel @Inject constructor(
             nextPageToken = files.nextPageToken
             isLastPage = nextPageToken == null
 
+            val filesDataModel = mutableListOf<FilesDataModel>()
+
             try {
                 val filesList = files.files.map {
                     DriveFile(
@@ -119,11 +113,29 @@ class FilesViewModel @Inject constructor(
                 }.distinctBy { it.id }.toMutableList()
 
                 response = if (response == null) {
-                    filesList
+                    filesDataModel.addAll(
+                        filesList.map {
+                            FilesDataModel.File(it)
+                        }
+                    )
+                    filesDataModel
                 } else {
-                    response!!.addAll(filesList)
-                    response
+                    response!!.addAll(
+                        // append new list of files
+                        filesList.map { FilesDataModel.File(it) }
+                    )
+                    // return new list and remove all Loading
+                    response!!.filter {
+                        it != FilesDataModel.Loading
+                    }.toMutableList()
                 }
+
+                // before submitting add Loading
+                // if list is not at last page
+                if (!isLastPage) {
+                    response!!.add(FilesDataModel.Loading)
+                }
+
                 _filesList.postValue(Resource.Success(response!!))
             } catch (npe: NullPointerException) {
                 _filesList.postValue(Resource.Error(files.toString()))
@@ -140,25 +152,27 @@ class FilesViewModel @Inject constructor(
 
             Log.d(TAG, teamDrives.toString())
 
-            val sharedDrives = teamDrives.teamDrives.map {
-                DriveFile(
-                    id = it.id,
-                    name = it.name,
-                    size = null,
-                    mimeType = it.kind,
-                    iconLink = null
-                )
-            }.distinctBy { it.id }.sortedBy { it.name }
+            val filesDataModel = mutableListOf<FilesDataModel>()
+            val sharedDrives = teamDrives.teamDrives
+                .map {
+                    FilesDataModel.File(
+                        DriveFile(
+                            id = it.id,
+                            name = it.name,
+                            size = null,
+                            mimeType = it.kind,
+                            iconLink = null
+                        )
+                    )
+                }
+                .distinctBy { it.driveFile.id }
+                .sortedBy { it.driveFile.name }
 
-            _filesList.postValue(Resource.Success(sharedDrives))
+            filesDataModel.addAll(sharedDrives)
+
+            _filesList.postValue(Resource.Success(filesDataModel.toList()))
         }
     }
-
-    fun setLoadingState(atLastItem: Boolean, isLoading: Boolean) {
-        if (_atLastItem.value == LoadingState(atLastItem, isLoading)) return
-        _atLastItem.value = LoadingState(atLastItem, isLoading)
-    }
-
 
     fun handleSignInResult(result: Intent) = viewModelScope.launch {
         driveHelper.handleSignIn(result)
