@@ -12,8 +12,8 @@ enum class Orientation(
 
 fun setOrientation(activity: Activity, orientation: Orientation?) {
     activity.requestedOrientation = when (orientation) {
-        Orientation.LANDSCAPE -> SCREEN_ORIENTATION_LANDSCAPE
-        Orientation.PORTRAIT -> SCREEN_ORIENTATION_PORTRAIT
+        Orientation.LANDSCAPE -> SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        Orientation.PORTRAIT -> SCREEN_ORIENTATION_SENSOR_PORTRAIT
         else -> SCREEN_ORIENTATION_FULL_SENSOR
     }
 }
