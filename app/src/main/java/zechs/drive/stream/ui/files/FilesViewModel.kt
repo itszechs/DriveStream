@@ -151,6 +151,7 @@ class FilesViewModel @Inject constructor(
             val teamDrives = drive
                 .teamdrives()
                 .list()
+                .setFields("nextPageToken, drives(id, name, kind)")
                 .setPageSize(pageSize)
                 .setPageToken(nextPageToken)
                 .execute()
