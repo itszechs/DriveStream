@@ -23,4 +23,6 @@
     <string name="ok">OK</string>
     <string name="details">Details</string>
     <string name="retry">Retry</string>
+    <string name="lock">Lock</string>
+    <string name="unlock">Unlock</string>
 </resources>
