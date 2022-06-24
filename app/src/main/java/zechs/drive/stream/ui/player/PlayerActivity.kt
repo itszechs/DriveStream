@@ -354,6 +354,11 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun handleLockingControls() {
+        TransitionManager.beginDelayedTransition(
+            playerView, AutoTransition().apply {
+                duration = 150L
+            }
+        )
         if (controlsLocked) {
             lockControls()
         } else {
