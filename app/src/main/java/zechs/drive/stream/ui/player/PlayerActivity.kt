@@ -7,7 +7,9 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.animation.AccelerateInterpolator
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -69,6 +71,7 @@ class PlayerActivity : AppCompatActivity() {
 
     // Player views
     private lateinit var mainControlsRoot: LinearLayout
+    private lateinit var controlsScrollView: HorizontalScrollView
     private lateinit var progressViewGroup: LinearLayout
     private lateinit var toolbar: MaterialToolbar
     private lateinit var btnPlay: MaterialButton
@@ -80,6 +83,8 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnPip: MaterialButton
     private lateinit var btnSpeed: MaterialButton
     private lateinit var btnRotate: MaterialButton
+    private lateinit var btnLock: MaterialButton
+    private lateinit var btnUnlock: MaterialButton
 
     // Dialogs
     private var audioDialog: Dialog? = null
@@ -88,6 +93,7 @@ class PlayerActivity : AppCompatActivity() {
 
     // States
     private var onStopCalled = false
+    private var controlsLocked = false
 
     // Configs
     private var speed = arrayOf("0.25x", "0.5x", "Normal", "1.25x", "1.5x", "2x")
@@ -105,6 +111,7 @@ class PlayerActivity : AppCompatActivity() {
         playerView = binding.playerView
 
         mainControlsRoot = playerView.findViewById(R.id.mainControls)
+        controlsScrollView = playerView.findViewById(R.id.controlsScrollView)
         progressViewGroup = playerView.findViewById(R.id.linearLayout2)
         toolbar = playerView.findViewById(R.id.playerToolbar)
         btnPlay = playerView.findViewById(R.id.btnPlay)
@@ -116,6 +123,8 @@ class PlayerActivity : AppCompatActivity() {
         btnPip = playerView.findViewById(R.id.btnPip)
         btnSpeed = playerView.findViewById(R.id.btnSpeed)
         btnRotate = playerView.findViewById(R.id.btnRotate)
+        btnLock = playerView.findViewById(R.id.btnLock)
+        btnUnlock = playerView.findViewById(R.id.btnUnlock)
 
         // Back button
         toolbar.setNavigationOnClickListener {
@@ -192,6 +201,16 @@ class PlayerActivity : AppCompatActivity() {
             orientation = getNextOrientation(orientation)
             Log.d(TAG, "orientation=${orientation}")
             setOrientation(this@PlayerActivity, orientation)
+        }
+
+        btnLock.setOnClickListener {
+            controlsLocked = true
+            handleLockingControls()
+        }
+
+        btnUnlock.setOnClickListener {
+            controlsLocked = false
+            handleLockingControls()
         }
 
         updateOrientation(resources.configuration)
@@ -325,6 +344,35 @@ class PlayerActivity : AppCompatActivity() {
             .setSeekForwardIncrementMs(10_000)
             .setSeekBackIncrementMs(10_000)
             .build()
+
+        playerView.setControllerVisibilityListener {
+            if (it == View.VISIBLE) {
+                handleLockingControls()
+            }
+        }
+
+    }
+
+    private fun handleLockingControls() {
+        if (controlsLocked) {
+            lockControls()
+        } else {
+            unlockControls()
+        }
+    }
+
+    private fun lockControls() {
+        controlsScrollView.visibility = View.GONE
+        mainControlsRoot.visibility = View.GONE
+        btnUnlock.visibility = View.VISIBLE
+        toolbar.visibility = View.GONE
+    }
+
+    private fun unlockControls() {
+        btnUnlock.visibility = View.GONE
+        toolbar.visibility = View.VISIBLE
+        controlsScrollView.visibility = View.VISIBLE
+        mainControlsRoot.visibility = View.VISIBLE
     }
 
     private fun releasePlayer() {
