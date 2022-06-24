@@ -107,26 +107,28 @@ class FilesViewModel @Inject constructor(
             val filesDataModel = mutableListOf<FilesDataModel>()
 
             try {
-                val filesList = files.files
-                    .map {
-                        FilesDataModel.File(
-                            DriveFile(
-                                id = it.id,
-                                name = it.name,
-                                size = it.getSize(),
-                                mimeType = it.mimeType,
-                                iconLink = it.iconLink
-                            )
-                        )
-                    }.distinctBy { it.driveFile.id }
+                val filesList = files.files.map {
+                    DriveFile(
+                        id = it.id,
+                        name = it.name,
+                        size = it.getSize(),
+                        mimeType = it.mimeType,
+                        iconLink = it.iconLink
+                    )
+                }.distinctBy { it.id }.toMutableList()
 
                 response = if (response == null) {
-                    filesDataModel.addAll(filesList)
+                    filesDataModel.addAll(
+                        filesList.map {
+                            FilesDataModel.File(it)
+                        }
+                    )
                     filesDataModel
                 } else {
-                    // append new list of files
-                    response!!.addAll(filesList)
-
+                    response!!.addAll(
+                        // append new list of files
+                        filesList.map { FilesDataModel.File(it) }
+                    )
                     // return new list and remove all Loading
                     response!!.filter {
                         it != FilesDataModel.Loading
@@ -151,13 +153,9 @@ class FilesViewModel @Inject constructor(
             val teamDrives = drive
                 .teamdrives()
                 .list()
-                .setPageSize(pageSize)
-                .setPageToken(nextPageToken)
                 .execute()
 
             Log.d(TAG, teamDrives.toString())
-            nextPageToken = teamDrives.nextPageToken
-            isLastPage = nextPageToken == null
 
             val filesDataModel = mutableListOf<FilesDataModel>()
             val sharedDrives = teamDrives.teamDrives
@@ -175,24 +173,7 @@ class FilesViewModel @Inject constructor(
                 .distinctBy { it.driveFile.id }
                 .sortedBy { it.driveFile.name }
 
-            response = if (response == null) {
-                filesDataModel.addAll(sharedDrives)
-                filesDataModel
-            } else {
-                // append new list of files
-                response!!.addAll(sharedDrives)
-
-                // return new list and remove all Loading
-                response!!.filter {
-                    it != FilesDataModel.Loading
-                }.toMutableList()
-            }
-
-            // before submitting add Loading
-            // if list is not at last page
-            if (!isLastPage) {
-                response!!.add(FilesDataModel.Loading)
-            }
+            filesDataModel.addAll(sharedDrives)
 
             _filesList.postValue(Resource.Success(filesDataModel.toList()))
         }
