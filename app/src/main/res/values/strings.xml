@@ -25,4 +25,8 @@
     <string name="retry">Retry</string>
     <string name="lock">Lock</string>
     <string name="unlock">Unlock</string>
+    <string name="logout">Logout</string>
+    <string name="log_out_dialog_title">Are you sure you want to log out?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 </resources>

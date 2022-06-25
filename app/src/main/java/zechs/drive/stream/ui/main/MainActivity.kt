@@ -12,10 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.Scopes
-import com.google.android.gms.common.api.Scope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import zechs.drive.stream.R
@@ -69,13 +65,7 @@ class MainActivity : AppCompatActivity() {
     private fun requestSignIn() {
         Log.d(TAG, "Requesting sign-in")
 
-        val signInOptions = GoogleSignInOptions
-            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestScopes(Scope(Scopes.DRIVE_FULL))
-            .requestEmail()
-            .build()
-
-        val client = GoogleSignIn.getClient(this, signInOptions)
+        val client = viewModel.getClient()
 
         val startForResult = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()

@@ -47,4 +47,5 @@ class MainViewModel @Inject constructor(
         Log.d(TAG, msg)
     }
 
+    fun getClient() = driveHelper.getClient()
 }
