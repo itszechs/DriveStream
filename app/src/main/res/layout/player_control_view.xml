@@ -28,17 +28,18 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnUnlock"
-        style="@style/Widget.Material3.Button.IconButton"
+        style="@style/Widget.Material3.Button.TonalButton.Icon.Only"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:padding="16dp"
+        android:padding="12dp"
+        app:iconSize="20dp"
         android:tooltipText="@string/unlock"
         android:visibility="gone"
-        app:icon="@drawable/ic_lock_24"
+        app:icon="@drawable/ic_unlock_24"
         app:iconTint="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -144,7 +145,7 @@
 
     <HorizontalScrollView
         android:id="@+id/controlsScrollView"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:scrollbars="none"
@@ -159,7 +160,6 @@
             android:id="@+id/linearLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:gravity="center"
             android:orientation="horizontal">
 

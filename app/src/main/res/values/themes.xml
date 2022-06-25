@@ -57,4 +57,8 @@
         <item name="iconTint">@color/textColor_87</item>
     </style>
 
+    <style name="Widget.Material3.Button.TonalButton.Icon.Only" parent="Widget.Material3.Button.IconButton">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Material3.Button.TonalButton</item>
+    </style>
+
 </resources>
