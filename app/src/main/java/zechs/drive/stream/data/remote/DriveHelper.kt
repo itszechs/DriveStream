@@ -5,6 +5,9 @@ import android.content.Intent
 import android.util.Log
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.Scopes
 import com.google.android.gms.common.api.Scope
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -34,6 +37,17 @@ class DriveHelper @Inject constructor(
 
     var hasSignedIn = false
         private set
+
+
+    fun getClient(): GoogleSignInClient {
+        val signInOptions = GoogleSignInOptions
+            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestScopes(Scope(Scopes.DRIVE_FULL))
+            .requestEmail()
+            .build()
+
+        return GoogleSignIn.getClient(context, signInOptions)
+    }
 
     /**
      * Public method to send intent result from

@@ -5,12 +5,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import zechs.drive.stream.R
 import zechs.drive.stream.databinding.FragmentHomeBinding
 import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.utils.ext.navigateSafe
+
 
 class HomeFragment : BaseFragment() {
 
@@ -20,6 +28,8 @@ class HomeFragment : BaseFragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel by activityViewModels<HomeViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,6 +85,8 @@ class HomeFragment : BaseFragment() {
 
         }
 
+        setupToolbar()
+        observeLogOutState()
     }
 
     private fun <T : MaterialButton> navigateToFiles(
@@ -87,6 +99,41 @@ class HomeFragment : BaseFragment() {
             )
             findNavController().navigateSafe(action)
             Log.d(TAG, "navigateToFiles(name=$name, query=$query)")
+        }
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.setOnMenuItemClickListener { item ->
+            if (item.itemId == R.id.action_logOut) {
+                MaterialAlertDialogBuilder(context!!)
+                    .setTitle(getString(R.string.log_out_dialog_title))
+                    .setNegativeButton(getString(R.string.no)) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
+                        dialog.dismiss()
+                        Log.d(TAG, "Logging out...")
+                        viewModel.logOut()
+                    }
+                    .show()
+                return@setOnMenuItemClickListener true
+            }
+            return@setOnMenuItemClickListener false
+        }
+    }
+
+    private fun observeLogOutState() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.hasLoggedOut.collect {
+                    if (it) {
+                        // restart activity
+                        activity!!.finish()
+                        delay(250L)
+                        activity!!.startActivity(activity!!.intent)
+                    }
+                }
+            }
         }
     }
 
