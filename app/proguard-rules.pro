@@ -33,3 +33,7 @@
 -keep class com.google.api.services.drive.** {
     *;
 }
+
+-keep public class zechs.mpv.MPVLib {
+    *;
+}
