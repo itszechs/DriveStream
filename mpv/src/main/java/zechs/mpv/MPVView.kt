@@ -19,19 +19,19 @@ class MPVView(
         internal const val TAG = "mpv"
     }
 
-    private val certPath = "${context.filesDir.path}/cacert.pem"
-
-    fun initialize() {
+    fun initialize(configDir: String) {
         MPVLib.create(this.context)
+        MPVLib.setOptionString("config", "yes")
+        MPVLib.setOptionString("config-dir", configDir)
 
-        initOptions()
+        initOptions(configDir)
         MPVLib.init()
 
         holder.addCallback(this)
         observeProperties()
     }
 
-    private fun initOptions() {
+    private fun initOptions(configDir: String) {
 
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -53,7 +53,7 @@ class MPVView(
         MPVLib.setOptionString("hwdec-codecs", "h264,hevc,mpeg4,mpeg2video,vp8,vp9")
         MPVLib.setOptionString("ao", "audiotrack,opensles")
         MPVLib.setOptionString("tls-verify", "yes")
-        MPVLib.setOptionString("tls-ca-file", certPath)
+        MPVLib.setOptionString("tls-ca-file", "${configDir}/cacert.pem")
         MPVLib.setOptionString("input-default-bindings", "yes")
         MPVLib.setOptionString("save-position-on-quit", "no")
         MPVLib.setOptionString("force-window", "no")
@@ -92,15 +92,7 @@ class MPVView(
             Property("pause", MPV_FORMAT_FLAG),
             Property("track-list"),
             Property("video-params"),
-            Property("playlist-pos", MPV_FORMAT_INT64),
-            Property("playlist-count", MPV_FORMAT_INT64),
             Property("video-format"),
-            Property("media-title", MPV_FORMAT_STRING),
-            Property("metadata/by-key/Artist", MPV_FORMAT_STRING),
-            Property("metadata/by-key/Album", MPV_FORMAT_STRING),
-            Property("loop-playlist"),
-            Property("loop-file"),
-            Property("shuffle", MPV_FORMAT_FLAG),
         )
 
         properties.forEach { (name, format) ->
@@ -117,7 +109,8 @@ class MPVView(
     }
 
     data class Track(
-        val mpvId: Int, val name: String
+        val mpvId: Int,
+        val name: String
     )
 
     var tracks = mapOf<String, MutableList<Track>>(
@@ -190,12 +183,6 @@ class MPVView(
         get() = MPVLib.getPropertyInt("time-pos")
         set(progress) = MPVLib.setPropertyInt("time-pos", progress!!)
 
-    val hwdecActive: Boolean
-        get() = (MPVLib.getPropertyString("hwdec-current") ?: "no") != "no"
-
-    var playbackSpeed: Double?
-        get() = MPVLib.getPropertyDouble("speed")
-        set(speed) = MPVLib.setPropertyDouble("speed", speed!!)
 
     class TrackDelegate {
         operator fun getValue(thisRef: Any?, property: KProperty<*>): Int {
@@ -213,7 +200,7 @@ class MPVView(
     }
 
     // video id
-    var vid: Int by TrackDelegate()
+    // var vid: Int by TrackDelegate()
 
     // audio id
     var aid: Int by TrackDelegate()
@@ -224,16 +211,7 @@ class MPVView(
     // Commands
 
     fun cyclePause() = MPVLib.command(arrayOf("cycle", "pause"))
-    fun cycleAudio() = MPVLib.command(arrayOf("cycle", "audio"))
-    fun cycleSub() = MPVLib.command(arrayOf("cycle", "sub"))
-    fun cycleDecoder() = MPVLib.command(arrayOf("cycle-values", "hwdec", "mediacodec-copy", "no"))
-
-    fun cycleSpeed() {
-        val speeds = arrayOf(0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0)
-        val currentSpeed = playbackSpeed ?: 1.0
-        val index = speeds.indexOfFirst { it > currentSpeed }
-        playbackSpeed = speeds[if (index == -1) 0 else index]
-    }
+    fun cycleScale() = MPVLib.command(arrayOf("cycle-values", "panscan", "1.0", "0.0"))
 
     // Surface callbacks
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
