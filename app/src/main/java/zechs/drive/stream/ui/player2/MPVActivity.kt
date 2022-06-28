@@ -14,6 +14,9 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import zechs.drive.stream.R
 import zechs.drive.stream.databinding.ActivityMpvBinding
 import zechs.drive.stream.databinding.PlayerControlViewBinding
 import zechs.drive.stream.utils.util.Constants.Companion.DRIVE_API
@@ -21,6 +24,7 @@ import zechs.mpv.MPVLib
 import zechs.mpv.MPVLib.mpvEventId.MPV_EVENT_PLAYBACK_RESTART
 import zechs.mpv.MPVView
 import zechs.mpv.utils.Utils
+import kotlin.math.roundToInt
 
 
 class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
@@ -70,6 +74,9 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
             btnPause.setOnClickListener { player.cyclePause() }
             exoFfwd.setOnClickListener { skipForward() }
             exoRew.setOnClickListener { rewindBackward() }
+            btnAudio.setOnClickListener { pickAudio() }
+            btnSubtitle.setOnClickListener { pickSub() }
+            btnChapter.setOnClickListener { pickChapter() }
         }
     }
 
@@ -177,6 +184,112 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         val newPos = currentPos - SKIP_DURATION
         player.timePos = newPos
     }
+
+
+    data class TrackData(
+        val track_id: Int,
+        val track_type: String
+    )
+
+    private fun trackSwitchNotification(f: () -> TrackData) {
+        val (track_id, track_type) = f()
+        val trackPrefix = when (track_type) {
+            "audio" -> getString(R.string.audio)
+            "sub" -> getString(R.string.subtitles)
+            "video" -> getString(R.string.video)
+            else -> "???"
+        }
+
+        if (track_id == -1) {
+            configSnackbar("$trackPrefix ${getString(R.string.track_off)}")
+            return
+        }
+
+        val trackName = player.tracks[track_type]
+            ?.firstOrNull { it.mpvId == track_id }
+            ?.name
+            ?: "???"
+
+        configSnackbar("$trackPrefix $trackName")
+    }
+
+    private fun pickAudio() {
+        selectTrack(
+            title = getString(R.string.select_audio),
+            type = "audio",
+            get = { player.aid },
+            set = { player.aid = it }
+        )
+    }
+
+    private fun pickSub() {
+        selectTrack(
+            title = getString(R.string.select_subtitle),
+            type = "sub",
+            get = { player.sid },
+            set = { player.sid = it }
+        )
+    }
+
+    private fun pickChapter() {
+        val chapters = player.loadChapters()
+
+        if (chapters.isEmpty()) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.chapters))
+                .setItems(arrayOf("None")) { dialog, _ ->
+                    dialog.dismiss()
+                }.show()
+            return
+        }
+
+        val chapterArray = chapters.map {
+            val timeCode = Utils.prettyTime(it.time.roundToInt())
+            if (!it.title.isNullOrEmpty()) {
+                getString(R.string.ui_chapter, it.title, timeCode)
+            } else {
+                getString(R.string.ui_chapter_fallback, it.index + 1, timeCode)
+            }
+        }.toTypedArray()
+
+        val selectedIndex = MPVLib.getPropertyInt("chapter") ?: 0
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.chapters))
+            .setSingleChoiceItems(chapterArray, selectedIndex) { dialog, item ->
+                MPVLib.setPropertyInt("chapter", chapters[item].index)
+                dialog.dismiss()
+            }.show()
+
+    }
+
+    private fun selectTrack(title: String, type: String, get: () -> Int, set: (Int) -> Unit) {
+        val tracks = player.tracks.getValue(type)
+        val selectedMpvId = get()
+        val selectedIndex = tracks.indexOfFirst { it.mpvId == selectedMpvId }
+
+        MaterialAlertDialogBuilder(this).apply {
+            setTitle(title)
+            setSingleChoiceItems(
+                tracks.map { it.name }.toTypedArray(),
+                selectedIndex
+            ) { dialog, item ->
+                val trackId = tracks[item].mpvId
+                set(trackId)
+                dialog.dismiss()
+                trackSwitchNotification { TrackData(trackId, type) }
+            }
+        }.also { it.show() }
+    }
+
+    private fun configSnackbar(msg: String, duration: Int = 750) {
+        Snackbar.make(
+            controller.root, msg, duration
+        ).apply {
+            anchorView = controller.linearLayout2
+        }.also { it.show() }
+    }
+
 
     ////////////////    MPV EVENTS    ////////////////
 

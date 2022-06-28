@@ -31,4 +31,9 @@
     <string name="yes">Yes</string>
     <string name="rewind_10_seconds">Rewind 10 seconds</string>
     <string name="skip_10_seconds">Skip 10 seconds</string>
+    <string name="track_off">Off</string>
+    <string name="ui_chapter_fallback">Chapter %1$d (%2$s)</string>
+    <string name="ui_chapter">%1$s (%2$s)</string>
+    <string name="no_chapters">No chapters</string>
+    <string name="video">Video</string>
 </resources>
