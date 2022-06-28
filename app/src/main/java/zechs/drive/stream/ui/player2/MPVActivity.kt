@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.WindowInsetsController
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import android.widget.SeekBar
@@ -40,14 +41,15 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         private const val SKIP_DURATION = 10 // in seconds
     }
 
-    // States
-    private var activityIsForeground = true
-    private var userIsOperatingSeekbar = false
-
     // View-binding
     private lateinit var binding: ActivityMpvBinding
     private lateinit var player: MPVView
     private lateinit var controller: PlayerControlViewBinding
+
+    // States
+    private var activityIsForeground = true
+    private var userIsOperatingSeekbar = false
+    private var controlsLocked = false
 
     // Configs
     private val speeds = arrayOf(0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0)
@@ -94,6 +96,17 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
                 Log.d(TAG, "orientation=${orientation}")
                 setOrientation(this@MPVActivity, orientation)
             }
+
+            btnLock.setOnClickListener {
+                controlsLocked = true
+                handleLockingControls()
+            }
+
+            btnUnlock.setOnClickListener {
+                controlsLocked = false
+                handleLockingControls()
+            }
+
         }
 
         updateOrientation(resources.configuration)
@@ -358,6 +371,38 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
             }
         }
     }
+
+
+    private fun handleLockingControls() {
+        TransitionManager.beginDelayedTransition(
+            controller.root,
+            AutoTransition().apply { duration = 150L }
+        )
+        if (controlsLocked) {
+            lockControls()
+        } else {
+            unlockControls()
+        }
+    }
+
+    private fun lockControls() {
+        controller.apply {
+            controlsScrollView.visibility = View.GONE
+            mainControls.visibility = View.GONE
+            btnUnlock.visibility = View.VISIBLE
+            playerToolbar.visibility = View.GONE
+        }
+    }
+
+    private fun unlockControls() {
+        controller.apply {
+            btnUnlock.visibility = View.GONE
+            playerToolbar.visibility = View.VISIBLE
+            controlsScrollView.visibility = View.VISIBLE
+            mainControls.visibility = View.VISIBLE
+        }
+    }
+
     ////////////////    MPV EVENTS    ////////////////
 
     override fun eventProperty(property: String, value: Boolean) {
@@ -397,6 +442,9 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
             runOnUiThread { updatePlaybackStatus(player.paused!!) }
         }
     }
+
+    ////////////////    END OF MPV EVENTS    ////////////////
+
 
     override fun onPause() {
         activityIsForeground = false
