@@ -43,6 +43,10 @@ import zechs.drive.stream.R
 import zechs.drive.stream.data.remote.DriveHelper
 import zechs.drive.stream.databinding.ActivityPlayerBinding
 import zechs.drive.stream.ui.player.utils.*
+import zechs.drive.stream.utils.util.Constants.Companion.DRIVE_API
+import zechs.drive.stream.utils.util.Orientation
+import zechs.drive.stream.utils.util.getNextOrientation
+import zechs.drive.stream.utils.util.setOrientation
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -52,7 +56,6 @@ class PlayerActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "PlayerActivity"
-        private const val DRIVE_API = "https://www.googleapis.com/drive/v3"
     }
 
     @Inject

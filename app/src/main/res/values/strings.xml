@@ -17,7 +17,7 @@
     <string name="unknown">Unknown</string>
     <string name="select_subtitle">Select subtitle track</string>
     <string name="select_audio">Select audio track</string>
-    <string name="select_speed">Select playback speed</string>
+    <string name="select_speed">Playback speed</string>
     <string name="portrait">Portrait</string>
     <string name="landscape">Landscape</string>
     <string name="ok">OK</string>
@@ -29,4 +29,11 @@
     <string name="log_out_dialog_title">Are you sure you want to log out?</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="rewind_10_seconds">Rewind 10 seconds</string>
+    <string name="skip_10_seconds">Skip 10 seconds</string>
+    <string name="track_off">Off</string>
+    <string name="ui_chapter_fallback">Chapter %1$d (%2$s)</string>
+    <string name="ui_chapter">%1$s (%2$s)</string>
+    <string name="no_chapters">No chapters</string>
+    <string name="video">Video</string>
 </resources>
