@@ -78,6 +78,10 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         player = binding.player
         controller = binding.controller
 
+        controller
+            .playerToolbar
+            .setNavigationOnClickListener { finish() }
+
         player.initialize(filesDir.path)
         player.addObserver(this)
         playMedia()
@@ -214,6 +218,8 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         }
 
         Log.d(TAG, "MPVActivity(fileId=$fileId, title=$title, accessToken=$accessToken)")
+
+        controller.playerToolbar.title = title
 
         val playUri = getStreamUrl(fileId)
         MPVLib.command(arrayOf("loadfile", playUri))
