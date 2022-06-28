@@ -81,6 +81,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
             btnSubtitle.setOnClickListener { pickSub() }
             btnChapter.setOnClickListener { pickChapter() }
             btnSpeed.setOnClickListener { pickSpeed() }
+            btnResize.setOnClickListener { player.cycleScale() }
         }
     }
 
