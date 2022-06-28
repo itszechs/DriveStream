@@ -44,6 +44,9 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
     private lateinit var player: MPVView
     private lateinit var controller: PlayerControlViewBinding
 
+    // Configs
+    private val speeds = arrayOf(0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,6 +80,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
             btnAudio.setOnClickListener { pickAudio() }
             btnSubtitle.setOnClickListener { pickSub() }
             btnChapter.setOnClickListener { pickChapter() }
+            btnSpeed.setOnClickListener { pickSpeed() }
         }
     }
 
@@ -290,6 +294,28 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         }.also { it.show() }
     }
 
+    private fun pickSpeed() {
+        val currentSpeed = MPVLib.getPropertyDouble("speed")
+        val selectedIndex = speeds.toList().indexOf(currentSpeed)
+
+        Log.d(TAG, "currentSpeed=$currentSpeed")
+
+        MaterialAlertDialogBuilder(this).apply {
+            setTitle(getString(R.string.select_speed))
+            setSingleChoiceItems(
+                speeds.map { it.toString() }.toTypedArray(),
+                selectedIndex
+            ) { dialog, item ->
+                setSpeed(speeds[item])
+                dialog.dismiss()
+                configSnackbar("Playback speed set to ${speeds[item]}x")
+            }
+        }.also { it.show() }
+    }
+
+    private fun setSpeed(speed: Double) {
+        MPVLib.setPropertyDouble("speed", speed)
+    }
 
     ////////////////    MPV EVENTS    ////////////////
 
