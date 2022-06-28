@@ -27,6 +27,8 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
     companion object {
         const val TAG = "MPVActivity"
+
+        private const val SKIP_DURATION = 10 // in seconds
     }
 
     // States
@@ -66,6 +68,8 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
             // init onClick listeners
             btnPlay.setOnClickListener { player.cyclePause() }
             btnPause.setOnClickListener { player.cyclePause() }
+            exoFfwd.setOnClickListener { skipForward() }
+            exoRew.setOnClickListener { rewindBackward() }
         }
     }
 
@@ -160,6 +164,18 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         } else {
             window.addFlags(FLAG_KEEP_SCREEN_ON)
         }
+    }
+
+    private fun skipForward() {
+        val currentPos = player.timePos ?: return
+        val newPos = currentPos + SKIP_DURATION
+        player.timePos = newPos
+    }
+
+    private fun rewindBackward() {
+        val currentPos = player.timePos ?: return
+        val newPos = currentPos - SKIP_DURATION
+        player.timePos = newPos
     }
 
     ////////////////    MPV EVENTS    ////////////////
