@@ -62,6 +62,10 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
             // progress bar
             progressBar.setOnSeekBarChangeListener(seekBarChangeListener)
+
+            // init onClick listeners
+            btnPlay.setOnClickListener { player.cyclePause() }
+            btnPause.setOnClickListener { player.cyclePause() }
         }
     }
 
