@@ -67,8 +67,10 @@
             android:id="@+id/exo_rew"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginEnd="24dp"
+            android:padding="16dp"
+            android:tooltipText="@string/rewind_10_seconds"
             app:icon="@drawable/ic_rewind_skip_24"
             app:iconSize="24dp"
             app:iconTint="@android:color/white" />
@@ -80,7 +82,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             app:icon="@drawable/ic_play_24"
-            app:iconSize="48dp"
+            app:iconSize="52dp"
             app:iconTint="@android:color/white" />
 
         <com.google.android.material.button.MaterialButton
@@ -89,15 +91,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_pause_24"
-            app:iconSize="48dp"
+            app:iconSize="52dp"
             app:iconTint="@android:color/white" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/exo_ffwd"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="24dp"
+            android:padding="16dp"
+            android:tooltipText="@string/skip_10_seconds"
             app:icon="@drawable/ic_forward_skip_24"
             app:iconSize="24dp"
             app:iconTint="@android:color/white" />
