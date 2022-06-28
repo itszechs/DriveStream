@@ -1,4 +1,4 @@
-package zechs.drive.stream.ui.player.utils
+package zechs.drive.stream.utils.util
 
 import android.app.Activity
 import android.content.pm.ActivityInfo.*
