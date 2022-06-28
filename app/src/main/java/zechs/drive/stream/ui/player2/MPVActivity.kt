@@ -5,13 +5,19 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowInsetsController
+import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.isVisible
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import zechs.drive.stream.databinding.ActivityMpvBinding
+import zechs.drive.stream.databinding.PlayerControlViewBinding
 import zechs.drive.stream.utils.util.Constants.Companion.DRIVE_API
 import zechs.mpv.MPVLib
+import zechs.mpv.MPVLib.mpvEventId.MPV_EVENT_PLAYBACK_RESTART
 import zechs.mpv.MPVView
 import zechs.mpv.utils.Utils
 
@@ -28,6 +34,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
     // View-binding
     private lateinit var binding: ActivityMpvBinding
     private lateinit var player: MPVView
+    private lateinit var controller: PlayerControlViewBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +47,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         hideSystemUI()
 
         player = binding.player
+        controller = binding.controller
 
         player.initialize(filesDir.path)
         player.addObserver(this)
@@ -92,15 +100,48 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         }
     }
 
+    private fun updatePlaybackPos(position: Int) {
+        controller.exoPosition.text = Utils.prettyTime(position)
+        controller.progressBar.progress = position
+    }
+
+    private fun updatePlaybackDuration(duration: Int) {
+        controller.exoDuration.text = Utils.prettyTime(duration)
+        controller.progressBar.max = duration
+    }
+
+    private fun updatePlaybackStatus(paused: Boolean) {
+        TransitionManager.beginDelayedTransition(
+            controller.mainControls,
+            AutoTransition().apply { duration = 250L }
+        )
+
+        controller.btnPlay.isVisible = paused
+        controller.btnPause.isVisible = !paused
+
+        if (paused) {
+            window.clearFlags(FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.addFlags(FLAG_KEEP_SCREEN_ON)
+        }
+    }
 
     ////////////////    MPV EVENTS    ////////////////
 
     override fun eventProperty(property: String, value: Boolean) {
-        if (!activityIsForeground) return
+        if (activityIsForeground && property == "pause") {
+            runOnUiThread { updatePlaybackStatus(value) }
+        }
     }
 
     override fun eventProperty(property: String, value: Long) {
         if (!activityIsForeground) return
+        runOnUiThread {
+            when (property) {
+                "time-pos" -> updatePlaybackPos(value.toInt())
+                "duration" -> updatePlaybackDuration(value.toInt())
+            }
+        }
     }
 
     override fun eventProperty(property: String) {
@@ -114,14 +155,15 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
     }
 
     private fun eventPropertyUi(property: String) {
-        if (!activityIsForeground) return
-        if (property == "track-list") {
+        if (activityIsForeground && property == "track-list") {
             player.loadTracks()
         }
     }
 
     override fun event(eventId: Int) {
-        if (!activityIsForeground) return
+        if (activityIsForeground && eventId == MPV_EVENT_PLAYBACK_RESTART) {
+            runOnUiThread { updatePlaybackStatus(player.paused!!) }
+        }
     }
 
     override fun onPause() {
