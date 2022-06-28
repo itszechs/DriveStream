@@ -16,11 +16,14 @@ import zechs.mpv.MPVView
 import zechs.mpv.utils.Utils
 
 
-class MPVActivity : AppCompatActivity() {
+class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
     companion object {
         const val TAG = "MPVActivity"
     }
+
+    // States
+    private var activityIsForeground = true
 
     // View-binding
     private lateinit var binding: ActivityMpvBinding
@@ -39,6 +42,7 @@ class MPVActivity : AppCompatActivity() {
         player = binding.player
 
         player.initialize(filesDir.path)
+        player.addObserver(this)
         playMedia()
     }
 
@@ -88,4 +92,56 @@ class MPVActivity : AppCompatActivity() {
         }
     }
 
+
+    ////////////////    MPV EVENTS    ////////////////
+
+    override fun eventProperty(property: String, value: Boolean) {
+        if (!activityIsForeground) return
+    }
+
+    override fun eventProperty(property: String, value: Long) {
+        if (!activityIsForeground) return
+    }
+
+    override fun eventProperty(property: String) {
+        if (!activityIsForeground) return
+        runOnUiThread { eventPropertyUi(property) }
+    }
+
+    override fun eventProperty(property: String, value: String) {
+        if (!activityIsForeground) return
+        runOnUiThread { eventPropertyUi(property) }
+    }
+
+    private fun eventPropertyUi(property: String) {
+        if (!activityIsForeground) return
+        if (property == "track-list") {
+            player.loadTracks()
+        }
+    }
+
+    override fun event(eventId: Int) {
+        if (!activityIsForeground) return
+    }
+
+    override fun onPause() {
+        activityIsForeground = false
+
+        if (isFinishing) {
+            MPVLib.command(arrayOf("stop"))
+        }
+        super.onPause()
+    }
+
+    override fun onResume() {
+        // If we weren't actually in the background
+        // (e.g. multi window mode), don't reinitialize stuff
+        if (activityIsForeground) {
+            super.onResume()
+            return
+        }
+
+        activityIsForeground = true
+        super.onResume()
+    }
 }
