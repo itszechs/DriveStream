@@ -1,12 +1,15 @@
 package zechs.drive.stream.ui.player2
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.media.AudioManager
+import android.media.AudioManager.*
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.WindowInsetsController
+import android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
@@ -39,8 +42,13 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
     companion object {
         const val TAG = "MPVActivity"
 
+        // fraction to which audio volume is ducked on loss of audio focus
+        private const val AUDIO_FOCUS_DUCKING = 0.5f
         private const val SKIP_DURATION = 10 // in seconds
     }
+
+    private lateinit var audioManager: AudioManager
+    private var audioFocusRestore: () -> Unit = {}
 
     // View-binding
     private lateinit var binding: ActivityMpvBinding
@@ -53,6 +61,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
     private var controlsLocked = false
 
     // Configs
+    private var onLoadCommands = mutableListOf<Array<String>>()
     private val speeds = arrayOf(0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0)
     private var orientation = Orientation.LANDSCAPE
 
@@ -72,6 +81,26 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         player.initialize(filesDir.path)
         player.addObserver(this)
         playMedia()
+
+        audioManager = getSystemService(
+            Context.AUDIO_SERVICE
+        ) as AudioManager
+
+        @Suppress("DEPRECATION")
+        audioManager.requestAudioFocus(
+            audioFocusChangeListener,
+            STREAM_MUSIC,
+            AUDIOFOCUS_GAIN
+        ).also {
+            if (it != AUDIOFOCUS_REQUEST_GRANTED) {
+                Log.w(TAG, "Audio focus not granted")
+                onLoadCommands.add(arrayOf("set", "pause", "yes"))
+            }
+        }
+
+        // setVolumeControlStream
+        volumeControlStream = STREAM_MUSIC
+
 
         controller.apply {
             // setup controller view for mpv
@@ -140,6 +169,33 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
             userIsOperatingSeekbar = false
         }
     }
+    private val audioFocusChangeListener = OnAudioFocusChangeListener { type ->
+        Log.v(TAG, "Audio focus changed: $type")
+        when (type) {
+            AUDIOFOCUS_LOSS,
+            AUDIOFOCUS_LOSS_TRANSIENT -> {
+                // loss can occur in addition to ducking, so remember the old callback
+                val oldRestore = audioFocusRestore
+                val wasPlayerPaused = player.paused ?: false
+                player.paused = true
+                audioFocusRestore = {
+                    oldRestore()
+                    if (!wasPlayerPaused) player.paused = false
+                }
+            }
+            AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+                MPVLib.command(arrayOf("multiply", "volume", AUDIO_FOCUS_DUCKING.toString()))
+                audioFocusRestore = {
+                    val inv = 1f / AUDIO_FOCUS_DUCKING
+                    MPVLib.command(arrayOf("multiply", "volume", inv.toString()))
+                }
+            }
+            AUDIOFOCUS_GAIN -> {
+                audioFocusRestore()
+                audioFocusRestore = {}
+            }
+        }
+    }
 
     override fun onNewIntent(i: Intent?) {
         super.onNewIntent(i)
@@ -182,8 +238,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(window, window.decorView).let { controller ->
             controller.hide(WindowInsetsCompat.Type.systemBars())
-            controller.systemBarsBehavior =
-                WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.systemBarsBehavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 
@@ -485,6 +540,9 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
     override fun onDestroy() {
         Log.v(TAG, "Exiting.")
+
+        @Suppress("DEPRECATION")
+        audioManager.abandonAudioFocus(audioFocusChangeListener)
 
         player.removeObserver(this)
         player.destroy()
