@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.WindowInsetsController
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -30,6 +31,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
     // States
     private var activityIsForeground = true
+    private var userIsOperatingSeekbar = false
 
     // View-binding
     private lateinit var binding: ActivityMpvBinding
@@ -52,6 +54,32 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         player.initialize(filesDir.path)
         player.addObserver(this)
         playMedia()
+
+        controller.apply {
+            // setup controller view for mpv
+            exoProgress.isVisible = false
+            progressBar.isVisible = true
+
+            // progress bar
+            progressBar.setOnSeekBarChangeListener(seekBarChangeListener)
+        }
+    }
+
+    private val seekBarChangeListener = object : SeekBar.OnSeekBarChangeListener {
+        override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+            if (!fromUser)
+                return
+            player.timePos = progress
+            updatePlaybackPos(progress)
+        }
+
+        override fun onStartTrackingTouch(seekBar: SeekBar) {
+            userIsOperatingSeekbar = true
+        }
+
+        override fun onStopTrackingTouch(seekBar: SeekBar) {
+            userIsOperatingSeekbar = false
+        }
     }
 
     override fun onNewIntent(i: Intent?) {
@@ -102,12 +130,16 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
     private fun updatePlaybackPos(position: Int) {
         controller.exoPosition.text = Utils.prettyTime(position)
-        controller.progressBar.progress = position
+        if (!userIsOperatingSeekbar) {
+            controller.progressBar.progress = position
+        }
     }
 
     private fun updatePlaybackDuration(duration: Int) {
         controller.exoDuration.text = Utils.prettyTime(duration)
-        controller.progressBar.max = duration
+        if (!userIsOperatingSeekbar) {
+            controller.progressBar.max = duration
+        }
     }
 
     private fun updatePlaybackStatus(paused: Boolean) {
