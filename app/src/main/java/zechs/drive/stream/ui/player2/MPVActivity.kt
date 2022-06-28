@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import androidx.transition.AutoTransition
+import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -107,6 +108,16 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
                 handleLockingControls()
             }
 
+        }
+
+        // hide/show controller
+        player.setOnClickListener {
+            val root = controller.root
+            TransitionManager.beginDelayedTransition(root, Fade())
+            root.isVisible = !root.isVisible
+            if (root.isVisible) {
+                handleLockingControls()
+            }
         }
 
         updateOrientation(resources.configuration)
