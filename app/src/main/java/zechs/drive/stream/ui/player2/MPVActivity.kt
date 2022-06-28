@@ -1,6 +1,7 @@
 package zechs.drive.stream.ui.player2
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import android.view.WindowInsetsController
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -20,6 +22,9 @@ import zechs.drive.stream.R
 import zechs.drive.stream.databinding.ActivityMpvBinding
 import zechs.drive.stream.databinding.PlayerControlViewBinding
 import zechs.drive.stream.utils.util.Constants.Companion.DRIVE_API
+import zechs.drive.stream.utils.util.Orientation
+import zechs.drive.stream.utils.util.getNextOrientation
+import zechs.drive.stream.utils.util.setOrientation
 import zechs.mpv.MPVLib
 import zechs.mpv.MPVLib.mpvEventId.MPV_EVENT_PLAYBACK_RESTART
 import zechs.mpv.MPVView
@@ -46,6 +51,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
     // Configs
     private val speeds = arrayOf(0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0)
+    private var orientation = Orientation.LANDSCAPE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +88,16 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
             btnChapter.setOnClickListener { pickChapter() }
             btnSpeed.setOnClickListener { pickSpeed() }
             btnResize.setOnClickListener { player.cycleScale() }
+
+            btnRotate.setOnClickListener {
+                orientation = getNextOrientation(orientation)
+                Log.d(TAG, "orientation=${orientation}")
+                setOrientation(this@MPVActivity, orientation)
+            }
         }
+
+        updateOrientation(resources.configuration)
+
     }
 
     private val seekBarChangeListener = object : SeekBar.OnSeekBarChangeListener {
@@ -318,6 +333,31 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         MPVLib.setPropertyDouble("speed", speed)
     }
 
+
+    private fun updateOrientation(newConfig: Configuration) {
+        when (newConfig.orientation) {
+            Configuration.ORIENTATION_PORTRAIT -> {
+                controller.btnRotate.apply {
+                    orientation = Orientation.PORTRAIT
+                    tooltipText = getString(R.string.landscape)
+                    icon = ContextCompat.getDrawable(
+                        /* context */ this@MPVActivity,
+                        /* drawableId */ R.drawable.ic_landscape_24
+                    )
+                }
+            }
+            else -> {
+                controller.btnRotate.apply {
+                    orientation = Orientation.LANDSCAPE
+                    tooltipText = getString(R.string.portrait)
+                    icon = ContextCompat.getDrawable(
+                        /* context */ this@MPVActivity,
+                        /* drawableId */ R.drawable.ic_portrait_24
+                    )
+                }
+            }
+        }
+    }
     ////////////////    MPV EVENTS    ////////////////
 
     override fun eventProperty(property: String, value: Boolean) {
@@ -377,5 +417,10 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
         activityIsForeground = true
         super.onResume()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateOrientation(newConfig)
     }
 }
