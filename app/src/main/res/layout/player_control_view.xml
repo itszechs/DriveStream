@@ -5,7 +5,7 @@
     android:id="@+id/controls"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#CC000000">
+    android:background="#B3000000">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/playerToolbar"
@@ -36,10 +36,10 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:padding="12dp"
-        app:iconSize="20dp"
         android:tooltipText="@string/unlock"
         android:visibility="gone"
         app:icon="@drawable/ic_unlock_24"
+        app:iconSize="20dp"
         app:iconTint="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -132,6 +132,14 @@
             android:layout_height="26dp"
             android:layout_weight="1"
             app:played_color="@color/colorAccent" />
+
+        <!-- for mpv -->
+        <SeekBar
+            android:id="@+id/progressBar"
+            android:layout_width="0dp"
+            android:layout_height="26dp"
+            android:layout_weight="1"
+            android:visibility="gone" />
 
         <!-- Exoplayer ID, do not change -->
         <TextView
