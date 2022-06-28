@@ -423,4 +423,14 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         super.onConfigurationChanged(newConfig)
         updateOrientation(newConfig)
     }
+
+    override fun onDestroy() {
+        Log.v(TAG, "Exiting.")
+
+        player.removeObserver(this)
+        player.destroy()
+
+        super.onDestroy()
+    }
+
 }
