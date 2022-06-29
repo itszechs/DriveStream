@@ -16,7 +16,7 @@ data class DriveFile(
     val isVideoFile = mimeType.startsWith("video/")
 
     val isFolder = mimeType == "application/vnd.google-apps.folder"
-            || mimeType == "drive#teamDrive"
+            || mimeType == "drive#drive"
 
     val isShortcut = mimeType == "application/vnd.google-apps.shortcut"
 
