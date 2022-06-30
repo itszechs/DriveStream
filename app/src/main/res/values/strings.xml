@@ -36,4 +36,7 @@
     <string name="ui_chapter">%1$s (%2$s)</string>
     <string name="no_chapters">No chapters</string>
     <string name="video">Video</string>
+    <string name="sign_in">Sign in</string>
+    <string name="enter_authorization_code">Enter authorization code?</string>
+    <string name="authorization_code">Authorization code</string>
 </resources>
