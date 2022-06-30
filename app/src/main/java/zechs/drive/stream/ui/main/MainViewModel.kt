@@ -1,9 +1,5 @@
 package zechs.drive.stream.ui.main
 
-import android.content.Intent
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,13 +7,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import zechs.drive.stream.data.remote.DriveHelper
-import zechs.drive.stream.ui.main.MainActivity.Companion.TAG
+import zechs.drive.stream.utils.SessionManager
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val driveHelper: DriveHelper
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
@@ -26,26 +21,18 @@ class MainViewModel @Inject constructor(
     private val _hasLoggedIn = MutableStateFlow(false)
     val hasLoggedIn = _hasLoggedIn.asStateFlow()
 
-    private val _loginStatus = MutableLiveData<String>()
-    val loginStatus: LiveData<String>
-        get() = _loginStatus
-
     init {
         viewModelScope.launch {
+            val status = getLoginStatus()
             delay(250L)
             _isLoading.value = false
+            _hasLoggedIn.value = status
         }
     }
 
-    fun handleSignInResult(result: Intent) = viewModelScope.launch {
-        driveHelper.handleSignIn(result)
-        val msg = if (driveHelper.hasSignedIn && driveHelper.drive != null) {
-            _hasLoggedIn.value = true
-            "Sign-in was successful"
-        } else "Unable to create drive service"
-        _loginStatus.value = msg
-        Log.d(TAG, msg)
+    private suspend fun getLoginStatus(): Boolean {
+        val refreshToken = sessionManager.fetchRefreshToken()
+        return refreshToken != null
     }
 
-    fun getClient() = driveHelper.getClient()
 }

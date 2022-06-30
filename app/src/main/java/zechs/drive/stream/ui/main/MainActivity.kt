@@ -1,9 +1,12 @@
 package zechs.drive.stream.ui.main
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.view.MotionEvent
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -44,7 +47,6 @@ class MainActivity : AppCompatActivity() {
         ) as NavHostFragment
         navController = navHostFragment.navController
 
-        requestSignIn()
         redirectOnLogin()
     }
 
@@ -62,37 +64,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestSignIn() {
-        Log.d(TAG, "Requesting sign-in")
-
-        val client = viewModel.getClient()
-
-        val startForResult = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result: ActivityResult ->
-            if (result.resultCode == RESULT_OK && result.data != null) {
-                val intent = result.data!!
-                Log.d(TAG, "intent=$intent")
-                viewModel.handleSignInResult(intent)
-            }
-        }
-        startForResult.launch(client.signInIntent)
-    }
-
     private fun redirectOnLogin() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.hasLoggedIn.collect {
-                    handleLogin(hasLoggedIn = it)
+                viewModel.hasLoggedIn.collect { hasLoggedIn ->
+                    Log.d(TAG, "hasLoggedIn=${hasLoggedIn}")
+                    if (hasLoggedIn) handleLogin()
                 }
             }
         }
     }
 
-    private fun handleLogin(hasLoggedIn: Boolean) {
-        Log.d(TAG, "hasLoggedIn=${hasLoggedIn}")
+    private fun handleLogin() {
         val currentFragment = navController.currentDestination?.id
-        if (hasLoggedIn && currentFragment != null && currentFragment == R.id.signInFragment) {
+        if (currentFragment != null && currentFragment == R.id.signInFragment) {
             navController.navigateSafe(R.id.action_signInFragment_to_homeFragment)
         }
     }
@@ -100,4 +85,5 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
+
 }
