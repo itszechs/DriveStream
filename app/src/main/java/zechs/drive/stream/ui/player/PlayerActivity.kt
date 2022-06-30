@@ -38,11 +38,14 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import zechs.drive.stream.R
-import zechs.drive.stream.data.remote.DriveHelper
+import zechs.drive.stream.data.repository.DriveRepository
 import zechs.drive.stream.databinding.ActivityPlayerBinding
-import zechs.drive.stream.ui.player.utils.*
+import zechs.drive.stream.ui.player.utils.AuthenticatingDataSource
+import zechs.drive.stream.ui.player.utils.BufferConfig
+import zechs.drive.stream.ui.player.utils.CustomTrackNameProvider
 import zechs.drive.stream.utils.util.Constants.Companion.DRIVE_API
 import zechs.drive.stream.utils.util.Orientation
 import zechs.drive.stream.utils.util.getNextOrientation
@@ -59,7 +62,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     @Inject
-    lateinit var driveHelper: DriveHelper
+    lateinit var driveRepository: Lazy<DriveRepository>
 
     // View binding
     private lateinit var binding: ActivityPlayerBinding
@@ -336,13 +339,18 @@ class PlayerActivity : AppCompatActivity() {
             val dataSource = DefaultHttpDataSource.Factory()
 
             AuthenticatingDataSource
-                .Factory(dataSource, driveHelper)
+                .Factory(dataSource, driveRepository.get())
                 .createDataSource()
         }
 
         player = ExoPlayer.Builder(this, rendererFactory)
             .setTrackSelector(trackSelector)
-            .setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory, extractorsFactory))
+            .setMediaSourceFactory(
+                DefaultMediaSourceFactory(
+                    dataSourceFactory,
+                    extractorsFactory
+                )
+            )
             .setLoadControl(loadControl)
             .setSeekForwardIncrementMs(10_000)
             .setSeekBackIncrementMs(10_000)
