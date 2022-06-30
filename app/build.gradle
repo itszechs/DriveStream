@@ -131,19 +131,6 @@ dependencies {
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2"
 
-    // Fix for dependency resolution
-    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-
-    // Google Play
-    implementation "com.google.android.gms:play-services-auth:20.2.0"
-    implementation "com.google.http-client:google-http-client-gson:1.26.0"
-    implementation("com.google.api-client:google-api-client-android:1.26.0") {
-        exclude group: "org.apache.httpcomponents"
-    }
-    implementation("com.google.apis:google-api-services-drive:v3-rev136-1.25.0") {
-        exclude group: "org.apache.httpcomponents"
-    }
-
     // Dagger hilt
     implementation "com.google.dagger:hilt-android:2.40.1"
     kapt "com.google.dagger:hilt-compiler:2.40.1"
