@@ -39,4 +39,6 @@
     <string name="sign_in">Sign in</string>
     <string name="enter_authorization_code">Enter authorization code?</string>
     <string name="authorization_code">Authorization code</string>
+    <string name="submit">Submit</string>
+    <string name="please_enter_auth_code">Please enter authorization code</string>
 </resources>
