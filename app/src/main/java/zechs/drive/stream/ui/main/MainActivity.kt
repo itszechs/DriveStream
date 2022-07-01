@@ -1,12 +1,10 @@
 package zechs.drive.stream.ui.main
 
-import android.graphics.Rect
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.os.Bundle
 import android.util.Log
-import android.view.MotionEvent
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -20,6 +18,8 @@ import kotlinx.coroutines.launch
 import zechs.drive.stream.R
 import zechs.drive.stream.databinding.ActivityMainBinding
 import zechs.drive.stream.utils.ext.navigateSafe
+import zechs.drive.stream.utils.util.NotificationKeys.Companion.UPDATE_CHANNEL_ID
+import zechs.drive.stream.utils.util.NotificationKeys.Companion.UPDATE_CHANNEL_NAME
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        createUpdateNotificationChannel()
 
         val navHostFragment = supportFragmentManager.findFragmentById(
             R.id.mainNavHostFragment
@@ -86,4 +87,17 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
+    private fun createUpdateNotificationChannel() {
+        val channel = NotificationChannel(
+            UPDATE_CHANNEL_ID,
+            UPDATE_CHANNEL_NAME,
+            IMPORTANCE_DEFAULT
+        )
+
+        val notificationManager = getSystemService(
+            NOTIFICATION_SERVICE
+        ) as NotificationManager
+
+        notificationManager.createNotificationChannel(channel)
+    }
 }
