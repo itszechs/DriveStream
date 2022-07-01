@@ -16,21 +16,6 @@ android {
 
     properties.load(project.rootProject.file("local.properties").newDataInputStream())
 
-    signingConfigs {
-        debug {
-            storeFile file(properties.getProperty("KEY_STORE", ""))
-            storePassword properties.getProperty("STORE_PASSWORD", "")
-            keyAlias properties.getProperty("KEY_ALIAS", "")
-            keyPassword properties.getProperty("KEY_PASSWORD", "")
-        }
-        release {
-            storeFile file(properties.getProperty("KEY_STORE", ""))
-            storePassword properties.getProperty("STORE_PASSWORD", "")
-            keyAlias properties.getProperty("KEY_ALIAS", "")
-            keyPassword properties.getProperty("KEY_PASSWORD", "")
-        }
-    }
-
     compileSdk 32
 
     defaultConfig {
@@ -57,10 +42,6 @@ android {
             proguardFiles getDefaultProguardFile(
                     'proguard-android-optimize.txt'
             ), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
-        }
-        debug {
-            signingConfig signingConfigs.debug
         }
     }
 
