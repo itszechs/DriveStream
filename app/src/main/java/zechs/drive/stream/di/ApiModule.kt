@@ -16,6 +16,7 @@ import zechs.drive.stream.data.remote.DriveApi
 import zechs.drive.stream.data.remote.GithubApi
 import zechs.drive.stream.data.remote.TokenApi
 import zechs.drive.stream.data.repository.DriveRepository
+import zechs.drive.stream.data.repository.GithubRepository
 import zechs.drive.stream.data.repository.TokenAuthenticator
 import zechs.drive.stream.utils.SessionManager
 import zechs.drive.stream.utils.util.Constants.Companion.GITHUB_API
@@ -110,5 +111,12 @@ object ApiModule {
         return DriveRepository(driveApi, tokenApi, sessionManager)
     }
 
+    @Provides
+    @Singleton
+    fun provideGithubRepository(
+        githubApi: Lazy<GithubApi>
+    ): GithubRepository {
+        return GithubRepository(githubApi)
+    }
 
 }
