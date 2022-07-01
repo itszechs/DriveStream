@@ -13,10 +13,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import zechs.drive.stream.BuildConfig
 import zechs.drive.stream.data.remote.DriveApi
+import zechs.drive.stream.data.remote.GithubApi
 import zechs.drive.stream.data.remote.TokenApi
 import zechs.drive.stream.data.repository.DriveRepository
+import zechs.drive.stream.data.repository.GithubRepository
 import zechs.drive.stream.data.repository.TokenAuthenticator
 import zechs.drive.stream.utils.SessionManager
+import zechs.drive.stream.utils.util.Constants.Companion.GITHUB_API
 import zechs.drive.stream.utils.util.Constants.Companion.GOOGLE_ACCOUNTS_URL
 import zechs.drive.stream.utils.util.Constants.Companion.GOOGLE_API
 import javax.inject.Singleton
@@ -89,6 +92,17 @@ object ApiModule {
 
     @Provides
     @Singleton
+    fun provideGithubApi(client: OkHttpClient, moshi: Moshi): GithubApi {
+        return Retrofit.Builder()
+            .baseUrl(GITHUB_API)
+            .client(client)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(GithubApi::class.java)
+    }
+
+    @Provides
+    @Singleton
     fun provideDriveRepository(
         driveApi: DriveApi,
         tokenApi: Lazy<TokenApi>,
@@ -97,5 +111,12 @@ object ApiModule {
         return DriveRepository(driveApi, tokenApi, sessionManager)
     }
 
+    @Provides
+    @Singleton
+    fun provideGithubRepository(
+        githubApi: Lazy<GithubApi>
+    ): GithubRepository {
+        return GithubRepository(githubApi)
+    }
 
 }
