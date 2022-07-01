@@ -22,6 +22,7 @@ import zechs.drive.stream.utils.SessionManager
 import zechs.drive.stream.utils.util.Constants.Companion.GITHUB_API
 import zechs.drive.stream.utils.util.Constants.Companion.GOOGLE_ACCOUNTS_URL
 import zechs.drive.stream.utils.util.Constants.Companion.GOOGLE_API
+import javax.inject.Named
 import javax.inject.Singleton
 
 
@@ -46,7 +47,8 @@ object ApiModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(
+    @Named("OkHttpClientWithAuthenticator")
+    fun provideOkHttpClientWithAuthenticator(
         logging: Lazy<HttpLoggingInterceptor>,
         tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient {
@@ -62,6 +64,21 @@ object ApiModule {
 
     @Provides
     @Singleton
+    @Named("OkHttpClient")
+    fun provideOkHttpClient(
+        logging: Lazy<HttpLoggingInterceptor>,
+    ): OkHttpClient {
+        return OkHttpClient.Builder()
+            .also {
+                if (BuildConfig.DEBUG) {
+                    // Logging only in debug builds
+                    it.addInterceptor(logging.get())
+                }
+            }.build()
+    }
+
+    @Provides
+    @Singleton
     fun provideMoshi(): Moshi {
         return Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
@@ -70,7 +87,11 @@ object ApiModule {
 
     @Provides
     @Singleton
-    fun provideDriveApi(client: OkHttpClient, moshi: Moshi): DriveApi {
+    fun provideDriveApi(
+        @Named("OkHttpClientWithAuthenticator")
+        client: OkHttpClient,
+        moshi: Moshi
+    ): DriveApi {
         return Retrofit.Builder()
             .baseUrl(GOOGLE_API)
             .client(client)
@@ -81,7 +102,11 @@ object ApiModule {
 
     @Provides
     @Singleton
-    fun provideTokenApi(client: OkHttpClient, moshi: Moshi): TokenApi {
+    fun provideTokenApi(
+        @Named("OkHttpClient")
+        client: OkHttpClient,
+        moshi: Moshi
+    ): TokenApi {
         return Retrofit.Builder()
             .baseUrl(GOOGLE_ACCOUNTS_URL)
             .client(client)
@@ -92,7 +117,11 @@ object ApiModule {
 
     @Provides
     @Singleton
-    fun provideGithubApi(client: OkHttpClient, moshi: Moshi): GithubApi {
+    fun provideGithubApi(
+        @Named("OkHttpClient")
+        client: OkHttpClient,
+        moshi: Moshi
+    ): GithubApi {
         return Retrofit.Builder()
             .baseUrl(GITHUB_API)
             .client(client)
