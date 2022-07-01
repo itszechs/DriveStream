@@ -158,7 +158,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
     private val seekBarChangeListener = object : SeekBar.OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-            if (!fromUser)
+            if (!fromUser || controlsLocked)
                 return
             player.timePos = progress
             updatePlaybackPos(progress)
