@@ -115,8 +115,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
             progressBar.setOnSeekBarChangeListener(seekBarChangeListener)
 
             // init onClick listeners
-            btnPlay.setOnClickListener { player.cyclePause() }
-            btnPause.setOnClickListener { player.cyclePause() }
+            btnPlayPause.setOnClickListener { player.cyclePause() }
             exoFfwd.setOnClickListener { skipForward() }
             exoRew.setOnClickListener { rewindBackward() }
             btnAudio.setOnClickListener { pickAudio() }
@@ -268,8 +267,11 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
             AutoTransition().apply { duration = 250L }
         )
 
-        controller.btnPlay.isVisible = paused
-        controller.btnPause.isVisible = !paused
+        controller.btnPlayPause.icon = ContextCompat.getDrawable(
+            /* context */ applicationContext,
+            /* drawableId */ if (paused) R.drawable.ic_play_24
+            else R.drawable.ic_pause_24
+        )
 
         if (paused) {
             window.clearFlags(FLAG_KEEP_SCREEN_ON)

@@ -80,8 +80,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var controlsScrollView: HorizontalScrollView
     private lateinit var progressViewGroup: LinearLayout
     private lateinit var toolbar: MaterialToolbar
-    private lateinit var btnPlay: MaterialButton
-    private lateinit var btnPause: MaterialButton
+    private lateinit var btnPlayPause: MaterialButton
     private lateinit var btnAudio: MaterialButton
     private lateinit var btnSubtitle: MaterialButton
     private lateinit var btnChapter: MaterialButton
@@ -120,8 +119,7 @@ class PlayerActivity : AppCompatActivity() {
         controlsScrollView = playerView.findViewById(R.id.controlsScrollView)
         progressViewGroup = playerView.findViewById(R.id.linearLayout2)
         toolbar = playerView.findViewById(R.id.playerToolbar)
-        btnPlay = playerView.findViewById(R.id.btnPlay)
-        btnPause = playerView.findViewById(R.id.btnPause)
+        btnPlayPause = playerView.findViewById(R.id.btnPlayPause)
         btnAudio = playerView.findViewById(R.id.btnAudio)
         btnSubtitle = playerView.findViewById(R.id.btnSubtitle)
         btnChapter = playerView.findViewById(R.id.btnChapter)
@@ -264,12 +262,8 @@ class PlayerActivity : AppCompatActivity() {
                     }
                 }
 
-                btnPlay.setOnClickListener {
-                    player.playWhenReady = true
-                }
-
-                btnPause.setOnClickListener {
-                    player.playWhenReady = false
+                btnPlayPause.setOnClickListener {
+                    player.playWhenReady = !player.playWhenReady
                 }
 
                 if (toolbar.title.isNullOrEmpty()) {
@@ -293,13 +287,11 @@ class PlayerActivity : AppCompatActivity() {
                     duration = 150L
                 }
             )
-            if (isPlaying) {
-                btnPlay.isGone = true
-                btnPause.isVisible = true
-            } else {
-                btnPlay.isVisible = true
-                btnPause.isGone = true
-            }
+            btnPlayPause.icon = ContextCompat.getDrawable(
+                /* context */ applicationContext,
+                /* drawableId */ if (isPlaying) R.drawable.ic_pause_24
+                else R.drawable.ic_play_24
+            )
             Log.d(TAG, "isPlaying=${isPlaying}")
         }
 

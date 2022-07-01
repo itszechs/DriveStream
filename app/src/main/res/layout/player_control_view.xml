@@ -76,17 +76,7 @@
             app:iconTint="@android:color/white" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPlay"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:icon="@drawable/ic_play_24"
-            app:iconSize="52dp"
-            app:iconTint="@android:color/white" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPause"
+            android:id="@+id/btnPlayPause"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
