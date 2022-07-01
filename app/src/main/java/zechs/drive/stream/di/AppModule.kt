@@ -1,12 +1,12 @@
 package zechs.drive.stream.di
 
 import android.content.Context
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import zechs.drive.stream.data.remote.DriveHelper
 import zechs.drive.stream.utils.SessionManager
 import javax.inject.Singleton
 
@@ -15,18 +15,17 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Singleton
     @Provides
-    fun provideDriveHelper(
-        @ApplicationContext appContext: Context,
-        sessionManager: SessionManager
-    ): DriveHelper = DriveHelper(appContext, sessionManager)
-
+    @Singleton
+    fun provideGson(): Gson {
+        return Gson()
+    }
 
     @Singleton
     @Provides
     fun provideSessionDataStore(
-        @ApplicationContext appContext: Context
-    ): SessionManager = SessionManager(appContext)
+        @ApplicationContext appContext: Context,
+        gson: Gson
+    ): SessionManager = SessionManager(appContext, gson)
 
 }

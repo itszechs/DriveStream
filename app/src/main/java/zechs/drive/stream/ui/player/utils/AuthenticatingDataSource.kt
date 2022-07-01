@@ -4,24 +4,26 @@ import android.net.Uri
 import com.google.android.exoplayer2.upstream.*
 import com.google.android.exoplayer2.util.Assertions
 import com.google.android.exoplayer2.util.Log
-import zechs.drive.stream.data.remote.DriveHelper
+import kotlinx.coroutines.runBlocking
+import zechs.drive.stream.data.repository.DriveRepository
 import zechs.drive.stream.ui.player.PlayerActivity.Companion.TAG
+import zechs.drive.stream.utils.state.Resource
 import java.io.IOException
 
 
 class AuthenticatingDataSource(
     private val wrappedDataSource: DefaultHttpDataSource,
-    private val driveHelper: DriveHelper
+    private val driveRepository: DriveRepository,
 ) : DataSource {
 
     class Factory(
         private val wrappedFactory: DefaultHttpDataSource.Factory,
-        private val driveHelper: DriveHelper
+        private val driveRepository: DriveRepository
     ) : DataSource.Factory {
         override fun createDataSource(): AuthenticatingDataSource {
             return AuthenticatingDataSource(
                 wrappedFactory.createDataSource(),
-                driveHelper
+                driveRepository
             )
         }
     }
@@ -41,17 +43,33 @@ class AuthenticatingDataSource(
         } catch (e: HttpDataSource.InvalidResponseCodeException) {
             if (e.responseCode == 401) {
                 // Token expired, trying to refresh it
-                val token = driveHelper.getAccessToken(true)
-                wrappedDataSource.setRequestProperty("Authorization", "Bearer $token")
-                Log.d(TAG, "Token expired, refreshing...")
-                Log.d(TAG, "ACCESS_TOKEN=$token")
+                val token = runBlocking {
+                    driveRepository.fetchAccessToken(forceRefresh = true)
+                }
+                if (token is Resource.Success) {
+                    val accessToken = token.data!!.accessToken
+                    wrappedDataSource.setRequestProperty("Authorization", "Bearer $accessToken")
+                    Log.d(TAG, "Token expired, refreshing...")
+                    Log.d(TAG, "ACCESS_TOKEN=$accessToken")
+                } else {
+                    Log.d(TAG, "Unable to refresh access token")
+                    Log.d(TAG, token.message!!)
+                }
             }
             if (e.responseCode == 403) {
                 // Unauthorized
-                val token = driveHelper.getAccessToken()
-                wrappedDataSource.setRequestProperty("Authorization", "Bearer $token")
-                Log.d(TAG, "Unauthorized, attaching token...")
-                Log.d(TAG, "ACCESS_TOKEN=$token")
+                val token = runBlocking {
+                    driveRepository.fetchAccessToken()
+                }
+                if (token is Resource.Success) {
+                    val accessToken = token.data!!.accessToken
+                    wrappedDataSource.setRequestProperty("Authorization", "Bearer $accessToken")
+                    Log.d(TAG, "Unauthorized, attaching token...")
+                    Log.d(TAG, "ACCESS_TOKEN=$accessToken")
+                } else {
+                    Log.d(TAG, "Unable to fetch access token")
+                    Log.d(TAG, token.message!!)
+                }
             }
             wrappedDataSource.open(dataSpec)
         }

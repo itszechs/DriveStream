@@ -42,6 +42,12 @@ android {
         archivesBaseName = "${applicationId}-${versionCode}"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String",
+                "CLIENT_ID", "\"${properties.getProperty("CLIENT_ID")}\""
+
+        buildConfigField "String",
+                "CLIENT_SECRET", "\"${properties.getProperty("CLIENT_SECRET")}\""
     }
 
     buildTypes {
@@ -85,8 +91,31 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["extension-*.aar"])
     implementation project(path: ':mpv')
 
-    // Exoplayer
     def exoplayer_version = "2.18.0"
+    def moshi_version = "1.13.0"
+    def retrofit_version = "2.9.0"
+
+    // Custom Tabs
+    implementation "androidx.browser:browser:1.4.0"
+
+    // Gson
+    implementation "com.google.code.gson:gson:2.9.0"
+
+    // Moshi
+    implementation "com.squareup.moshi:moshi:$moshi_version"
+    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
+
+    // OkHttp
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.3"))
+    implementation "com.squareup.okhttp3:okhttp"
+    implementation "com.squareup.okhttp3:logging-interceptor"
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+
+    // Exoplayer
     implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
     implementation "com.google.android.exoplayer:exoplayer-dash:$exoplayer_version"
     implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
@@ -104,19 +133,6 @@ dependencies {
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2"
-
-    // Fix for dependency resolution
-    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-
-    // Google Play
-    implementation "com.google.android.gms:play-services-auth:20.2.0"
-    implementation "com.google.http-client:google-http-client-gson:1.26.0"
-    implementation("com.google.api-client:google-api-client-android:1.26.0") {
-        exclude group: "org.apache.httpcomponents"
-    }
-    implementation("com.google.apis:google-api-services-drive:v3-rev136-1.25.0") {
-        exclude group: "org.apache.httpcomponents"
-    }
 
     // Dagger hilt
     implementation "com.google.dagger:hilt-android:2.40.1"
