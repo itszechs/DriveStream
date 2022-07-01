@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +34,7 @@ import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.ui.files.adapter.FilesAdapter
 import zechs.drive.stream.ui.files.adapter.FilesDataModel
 import zechs.drive.stream.ui.player.PlayerActivity
+import zechs.drive.stream.ui.player2.MPVActivity
 import zechs.drive.stream.utils.state.Resource
 
 
@@ -86,6 +88,7 @@ class FilesFragment : BaseFragment() {
 
         setupRecyclerView()
         setupFilesObserver()
+        mpvObserver()
     }
 
     private fun setupFilesObserver() {
@@ -192,15 +195,61 @@ class FilesFragment : BaseFragment() {
             )
             findNavController().navigate(action)
         } else if (file.isVideoFile) {
-            Intent(
-                context, PlayerActivity::class.java
-            ).apply {
-                putExtra("fileId", file.id)
-                putExtra("title", file.name)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }.also { startActivity(it) }
+            launchVideoPlayer(file)
         }
 
+    }
+
+    private fun launchVideoPlayer(file: DriveFile) {
+
+        val items = arrayOf("ExoPlayer", "MPV (Experimental)")
+
+        MaterialAlertDialogBuilder(context!!)
+            .setTitle(getString(R.string.play_using))
+            .setItems(items) { dialog, which ->
+                when (which) {
+                    0 -> launchExo(file)
+                    1 -> viewModel.fetchToken(file)
+                }
+                dialog.dismiss()
+            }.show()
+    }
+
+    private fun mpvObserver() {
+        viewModel.mpvFile.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { res ->
+                when (res) {
+                    is Resource.Success -> {
+                        launchMpv(res.data!!)
+                    }
+                    is Resource.Error -> {
+                        showSnackBar(res.message!!)
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun launchExo(file: DriveFile) {
+        Intent(
+            context, PlayerActivity::class.java
+        ).apply {
+            putExtra("fileId", file.id)
+            putExtra("title", file.name)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }.also { startActivity(it) }
+    }
+
+    private fun launchMpv(fileToken: FilesViewModel.FileToken) {
+        Intent(
+            context, MPVActivity::class.java
+        ).apply {
+            putExtra("fileId", fileToken.fileId)
+            putExtra("title", fileToken.fileName)
+            putExtra("accessToken", fileToken.accessToken)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }.also { startActivity(it) }
     }
 
     private val scrollListener = object : RecyclerView.OnScrollListener() {

@@ -41,4 +41,5 @@
     <string name="authorization_code">Authorization code</string>
     <string name="submit">Submit</string>
     <string name="please_enter_auth_code">Please enter authorization code</string>
+    <string name="play_using">Play using</string>
 </resources>

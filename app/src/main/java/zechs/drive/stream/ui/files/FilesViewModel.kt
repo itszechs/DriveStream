@@ -10,9 +10,11 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import zechs.drive.stream.data.model.DriveFile
 import zechs.drive.stream.data.repository.DriveRepository
 import zechs.drive.stream.ui.files.FilesFragment.Companion.TAG
 import zechs.drive.stream.ui.files.adapter.FilesDataModel
+import zechs.drive.stream.utils.Event
 import zechs.drive.stream.utils.state.Resource
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -26,6 +28,11 @@ class FilesViewModel @Inject constructor(
     private val _filesList = MutableLiveData<Resource<List<FilesDataModel>>>()
     val filesList: LiveData<Resource<List<FilesDataModel>>>
         get() = _filesList
+
+    private val _token = MutableLiveData<Event<Resource<FileToken>>>()
+    val mpvFile: LiveData<Event<Resource<FileToken>>>
+        get() = _token
+
 
     private var nextPageToken: String? = null
     private var response: MutableList<FilesDataModel>? = null
@@ -90,26 +97,7 @@ class FilesViewModel @Inject constructor(
                     .map { FilesDataModel.File(it.toDriveFile()) }
                     .distinctBy { it.driveFile.id }
 
-                response = if (response == null) {
-                    filesDataModel.addAll(filesList)
-                    filesDataModel
-                } else {
-                    // append new list of files
-                    response!!.addAll(filesList)
-
-                    // return new list and remove all Loading
-                    response!!.filter {
-                        it != FilesDataModel.Loading
-                    }.toMutableList()
-                }
-
-                // before submitting add Loading
-                // if list is not at last page
-                if (!isLastPage) {
-                    response!!.add(FilesDataModel.Loading)
-                }
-
-                _filesList.postValue(Resource.Success(response!!))
+                postSuccess(filesDataModel, filesList)
             }
             is Resource.Error -> {
                 _filesList.postValue(
@@ -140,29 +128,65 @@ class FilesViewModel @Inject constructor(
                     .map { FilesDataModel.File(it.toDriveFile()) }
                     .distinctBy { it.driveFile.id }
 
-                response = if (response == null) {
-                    filesDataModel.addAll(sharedDrives)
-                    filesDataModel
-                } else {
-                    // append new list of files
-                    response!!.addAll(sharedDrives)
-
-                    // return new list and remove all Loading
-                    response!!.filter {
-                        it != FilesDataModel.Loading
-                    }.toMutableList()
-                }
-
-                // before submitting add Loading
-                // if list is not at last page
-                if (!isLastPage) {
-                    response!!.add(FilesDataModel.Loading)
-                }
-
-                _filesList.postValue(Resource.Success(filesDataModel.toList()))
+                postSuccess(filesDataModel, sharedDrives)
             }
             is Resource.Error -> {
                 _filesList.postValue(Resource.Error(drivesResponse.message!!))
+            }
+            else -> {}
+        }
+    }
+
+    private fun postSuccess(
+        filesDataModel: MutableList<FilesDataModel>,
+        filesList: List<FilesDataModel.File>
+    ) {
+        response = if (response == null) {
+            filesDataModel.addAll(filesList)
+            filesDataModel
+        } else {
+            // append new list of files
+            response!!.addAll(filesList)
+
+            // return new list and remove all Loading
+            response!!.filter {
+                it != FilesDataModel.Loading
+            }.toMutableList()
+        }
+
+        // before submitting add Loading
+        // if list is not at last page
+        if (!isLastPage) {
+            response!!.add(FilesDataModel.Loading)
+        }
+
+        _filesList.postValue(Resource.Success(response!!))
+    }
+
+    data class FileToken(
+        val fileId: String,
+        val fileName: String,
+        val accessToken: String
+    )
+
+    fun fetchToken(file: DriveFile) = viewModelScope.launch {
+        _token.postValue(Event(Resource.Loading()))
+
+        val tokenResponse = driveRepository.fetchAccessToken()
+
+        when (tokenResponse) {
+            is Resource.Success -> {
+                val fileToken = FileToken(
+                    fileId = file.id,
+                    fileName = file.name,
+                    accessToken = tokenResponse.data!!.accessToken
+                )
+                _token.postValue(Event(Resource.Success(fileToken)))
+            }
+            is Resource.Error -> {
+                _token.postValue(
+                    Event(Resource.Error(tokenResponse.message!!))
+                )
             }
             else -> {}
         }
