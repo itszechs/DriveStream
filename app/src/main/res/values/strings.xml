@@ -42,4 +42,5 @@
     <string name="submit">Submit</string>
     <string name="please_enter_auth_code">Please enter authorization code</string>
     <string name="play_using">Play using</string>
+    <string name="new_version_available">Newer version of app is available. Click to download.</string>
 </resources>
