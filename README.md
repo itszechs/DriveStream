@@ -1,8 +1,11 @@
 # Drive Stream
 
-Google drive client with only one purpose that is to stream video files unlike the official app, this app streams the actual files instead of transcoded streams.
+Google drive client with only one purpose that is to stream video files unlike the official app,
+this app streams the actual files instead of transcoded streams.
 
-This app is powered by [Google Identity SDK](https://developers.google.com/identity/sign-in/android/start-integrating) and [ExoPlayer](https://github.com/google/ExoPlayer).
+This app is powered by [Drive API](https://developers.google.com/drive/api)
+, [ExoPlayer](https://github.com/google/ExoPlayer) and [mpv-android](https://github.com/mpv-android)
+.
 
 ## Screenshots
 
@@ -17,23 +20,40 @@ Go to the [Releases](https://github.com/itsZECHS/DriveStream/releases) to downlo
 ## How to Build?
 
 - Create a Google Console Project
-- [Configure OAuth Consent Screen](https://developers.google.com/workspace/guides/configure-oauth-consent)
-- [Configure your project with your siging key](https://developers.google.com/identity/sign-in/android/start-integrating#configure_a_project)
+- [Enable Drive API](https://developers.google.com/drive/api/guides/enable-drive-api#enable_the_drive_api)
+- [Create OAuth Client](https://console.developers.google.com/apis/credentials/oauthclient) (
+  Application type:
+  Web application)
+- Add `CLIENT_ID` & `CLIENT_SECRET` in `local.properties`
 
+Note: You can configure all the constants
+in [Constants.kt](https://github.com/itszechs/DriveStream/blob/master/app/src/main/java/zechs/drive/stream/utils/util/Constants.kt) (
+client id, secret, redirect uri etc.)
 
 ## What scopes are used?
 
 [List of all drive scopes](https://developers.google.com/identity/protocols/oauth2/scopes#drive)
 
-This app uses `https://www.googleapis.com/auth/drive` scope as it needs permission to `get()` or download the file in order to stream it.
+This app uses `https://www.googleapis.com/auth/drive` scope as it needs permission to `get()` or
+download the file in order to stream it.
 
 **Q. What operations does it perform using the drive scope?**
 
-- This app for the most part only lists files granted which can be done using `drive.readonly` scope but it also needs permissions to download the file so the video player can stream it. So to answer the question, app performs two operations
-    
+- This app for the most part only lists files granted which can be done using `drive.readonly` scope
+  but it also needs permissions to download the file so the video player can stream it. So to answer
+  the question, app performs two operations
+
     - List files
     - Download files
 
 **Q. Why does OAuth screen says "This app isn't verified"?**
 
-- Yes, that is because my console project is not verified and I don't intent on getting it verified as it requires you to have a website and privacy policy page etc. Since the project is not verified and uses sensitve scopes number of grants is limited to 100 so people are advised on creating their own project and using their own client-keys
+- Yes, that is because my console project is not verified and I don't intent on getting it verified
+  as it requires you to have a website and privacy policy page etc. Since the project is not
+  verified and uses sensitive scopes number of grants is limited to 100 so people are advised on
+  creating their own project and using their own client-keys
+
+Thanks to [mpv-android](https://github.com/mpv-android) for buildscripts to compile `libMPV`
+and `MPVLib` `MPVView`.
+
+Note: App releases are built using [rclone](https://github.com/rclone/rclone)'s client id.
