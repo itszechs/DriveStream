@@ -34,11 +34,11 @@ class MainViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val status = getLoginStatus()
-            getLatestRelease() // check for update
             delay(250L)
             _isLoading.value = false
             _hasLoggedIn.value = status
         }
+        getLatestRelease() // check for update
     }
 
     private suspend fun getLoginStatus(): Boolean {
@@ -46,7 +46,7 @@ class MainViewModel @Inject constructor(
         return refreshToken != null
     }
 
-    private suspend fun getLatestRelease() {
+    private fun getLatestRelease() = viewModelScope.launch {
         _latest.postValue(githubRepository.getLatestRelease())
     }
 }
