@@ -1,11 +1,34 @@
-# Drive Stream
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/52543663/177340758-57d2b8a6-a6a5-4b87-935a-7986384a81c0.png" align="center" width="128" />
+<p>
+<h1 align="center">
+  Drive Stream
+</h1>
+<p align="center">
+  Google drive client with only one purpose that is to stream video files unlike the official app,
+  this app streams the actual files instead of transcoded streams.
+</p>
 
-Google drive client with only one purpose that is to stream video files unlike the official app,
-this app streams the actual files instead of transcoded streams.
+<p align="center">
+  This app is powered by <a href="https://developers.google.com/drive/api">Drive API</a>, <a href="https://github.com/google/ExoPlayer">ExoPlayer</a> and <a href="https://github.com/mpv-android">mpv-android</a>.
+</p>
 
-This app is powered by [Drive API](https://developers.google.com/drive/api)
-, [ExoPlayer](https://github.com/google/ExoPlayer) and [mpv-android](https://github.com/mpv-android)
-.
+<div align="center">
+    <a href="https://github.com/itszechs/DriveStream/releases">
+
+  <img alt="Download count" src="https://img.shields.io/github/downloads/itszechs/DriveStream/total?style=for-the-badge">
+  </a>
+      <a href="https://github.com/itszechs/DriveStream/latest">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/itszechs/DriveStream?style=for-the-badge">
+  </a>
+  <a href="https://github.com/itszechs/DriveStream/blob/master/LICENSE">
+    <img alt="GitHub" src="https://img.shields.io/github/license/itszechs/DriveStream?style=for-the-badge">
+  </a>
+  <img alt="Codefactor rating" src="https://img.shields.io/codefactor/grade/github/itszechs/DriveStream/master?style=for-the-badge">
+</div>
+
+<br>
+<br>
 
 ## Screenshots
 
