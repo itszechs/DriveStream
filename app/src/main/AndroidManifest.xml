@@ -23,6 +23,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting"
+        android:windowSoftInputMode="adjustPan|adjustResize"
         tools:ignore="DataExtractionRules">
         <activity
             android:name=".ui.main.MainActivity"
