@@ -8,6 +8,7 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.WindowManager
 import zechs.mpv.MPVLib.mpvFormat.*
+import java.util.*
 import kotlin.reflect.KProperty
 
 class MPVView(
@@ -42,9 +43,12 @@ class MPVView(
             wm.defaultDisplay
         }
         val refreshRate = display.mode.refreshRate
+        val deviceLanguage = Locale.getDefault().isO3Language
 
-        Log.v(TAG, "Display ${display.displayId} reports FPS of $refreshRate")
+        Log.d(TAG, "Device language: $deviceLanguage")
+        Log.d(TAG, "Display ${display.displayId} reports FPS of $refreshRate")
 
+        MPVLib.setOptionString("alang", deviceLanguage)
         MPVLib.setOptionString("override-display-fps", refreshRate.toString())
         MPVLib.setOptionString("video-sync", "audio")
         MPVLib.setOptionString("vo", "gpu")

@@ -50,6 +50,7 @@ import zechs.drive.stream.utils.util.Constants.Companion.DRIVE_API
 import zechs.drive.stream.utils.util.Orientation
 import zechs.drive.stream.utils.util.getNextOrientation
 import zechs.drive.stream.utils.util.setOrientation
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -321,9 +322,12 @@ class PlayerActivity : AppCompatActivity() {
             )
             .build()
 
+        val deviceLanguage = Locale.getDefault().isO3Language
+        Log.d(TAG, "Device language: $deviceLanguage")
+
         trackSelector = DefaultTrackSelector(this).apply {
             parameters = this.buildUponParameters()
-                .setPreferredAudioLanguage("en")
+                .setPreferredAudioLanguage(deviceLanguage)
                 .build()
         }
 
