@@ -37,7 +37,7 @@
         </activity>
         <activity
             android:name=".ui.player.PlayerActivity"
-            android:configChanges="screenSize|smallestScreenSize|orientation|screenSize|screenLayout|keyboardHidden"
+            android:configChanges="uiMode|screenSize|smallestScreenSize|orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="true"
             android:keepScreenOn="true"
             android:resizeableActivity="true"
@@ -46,7 +46,7 @@
 
         <activity
             android:name=".ui.player2.MPVActivity"
-            android:configChanges="screenSize|smallestScreenSize|orientation|screenSize|screenLayout|keyboardHidden"
+            android:configChanges="uiMode|screenSize|smallestScreenSize|orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="true"
             android:launchMode="singleTask"
             android:resizeableActivity="true"
