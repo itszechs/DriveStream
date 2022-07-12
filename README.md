@@ -69,12 +69,6 @@ download the file in order to stream it.
     - List files
     - Download files
 
-**Q. Why does OAuth screen says "This app isn't verified"?**
-
-- Yes, that is because my console project is not verified and I don't intent on getting it verified
-  as it requires you to have a website and privacy policy page etc. Since the project is not
-  verified and uses sensitive scopes number of grants is limited to 100 so people are advised on
-  creating their own project and using their own client-keys
 
 Thanks to [mpv-android](https://github.com/mpv-android) for buildscripts to compile `libMPV`
 and `MPVLib` `MPVView`.
