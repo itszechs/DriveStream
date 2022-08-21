@@ -20,7 +20,7 @@ android {
 
     defaultConfig {
         applicationId "zechs.drive.stream"
-        minSdk 28
+        minSdk 21
         targetSdk 33
         versionCode 8
         versionName "1.2.3"
