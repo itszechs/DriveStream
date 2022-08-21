@@ -51,4 +51,5 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_system">Follow system</string>
     <string name="no_files_found">No files found</string>
+    <string name="pip_not_supported">PiP mode is not supported on your device</string>
 </resources>
