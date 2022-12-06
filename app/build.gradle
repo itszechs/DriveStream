@@ -76,9 +76,6 @@ dependencies {
     def moshi_version = "1.13.0"
     def retrofit_version = "2.9.0"
 
-    // Custom Tabs
-    implementation "androidx.browser:browser:1.4.0"
-
     // Gson
     implementation "com.google.code.gson:gson:2.9.0"
 
