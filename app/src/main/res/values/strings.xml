@@ -43,4 +43,5 @@
     <string name="please_enter_auth_code">Please enter authorization code</string>
     <string name="play_using">Play using</string>
     <string name="new_version_available">Newer version of app is available. Click to download.</string>
+    <string name="authorization_code_example">Ex: http://127.0.0.1:53682/?code=4/0BX2XfWi1VC9Iadsaa1hIX80rd17crGFCgyHgR_8rwkrIRJJf18LlSGbBWeg0wbZJdEZ3tm3A</string>
 </resources>
