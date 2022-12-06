@@ -90,8 +90,8 @@ class SignInFragment : BaseFragment() {
         if (_codeDialog == null) {
             _codeDialog = DialogCode(
                 context = requireContext(),
-                onSubmitClickListener = { code ->
-                    viewModel.requestRefreshToken(code)
+                onSubmitClickListener = { codeUri ->
+                    viewModel.requestRefreshToken(codeUri)
                     codeDialog.dismiss()
                 }
             )

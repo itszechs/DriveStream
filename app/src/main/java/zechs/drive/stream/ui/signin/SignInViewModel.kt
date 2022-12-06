@@ -1,5 +1,6 @@
 package zechs.drive.stream.ui.signin
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,11 +23,16 @@ class SignInViewModel @Inject constructor(
         get() = _loginStatus
 
     fun requestRefreshToken(
-        authCode: String
+        authCodeUri: String
     ) = viewModelScope.launch {
         _loginStatus.postValue(Resource.Loading())
-        val response = driveRepository.get().fetchRefreshToken(authCode)
-        _loginStatus.postValue(response)
+        val authCode = Uri.parse(authCodeUri).getQueryParameter("code")
+        if (authCode == null) {
+            _loginStatus.postValue(Resource.Error("Authorization code not found, please check url"))
+        } else {
+            val response = driveRepository.get().fetchRefreshToken(authCode)
+            _loginStatus.postValue(response)
+        }
     }
 
 }
