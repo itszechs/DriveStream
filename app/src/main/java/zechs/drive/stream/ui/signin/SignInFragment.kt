@@ -1,5 +1,6 @@
 package zechs.drive.stream.ui.signin
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -9,10 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import zechs.drive.stream.R
 import zechs.drive.stream.databinding.FragmentSignInBinding
@@ -53,13 +54,19 @@ class SignInFragment : BaseFragment() {
         _binding = FragmentSignInBinding.bind(view)
 
         binding.signInText.setOnClickListener {
-            CustomTabsIntent.Builder().build().also {
-                it.launchUrl(requireContext(), Uri.parse(AUTH_URL))
-            }
+            Intent().setAction(Intent.ACTION_VIEW)
+                .setData(Uri.parse(AUTH_URL))
+                .also { startActivity(it) }
         }
 
         binding.enterCode.setOnClickListener {
-            showCodeDialog()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Please note")
+                .setMessage(getString(R.string.important_note_message))
+                .setPositiveButton("Continue") { dialog, _ ->
+                    dialog.dismiss()
+                    showCodeDialog()
+                }.show()
         }
 
         loginObserver()
@@ -90,8 +97,8 @@ class SignInFragment : BaseFragment() {
         if (_codeDialog == null) {
             _codeDialog = DialogCode(
                 context = requireContext(),
-                onSubmitClickListener = { code ->
-                    viewModel.requestRefreshToken(code)
+                onSubmitClickListener = { codeUri ->
+                    viewModel.requestRefreshToken(codeUri)
                     codeDialog.dismiss()
                 }
             )
