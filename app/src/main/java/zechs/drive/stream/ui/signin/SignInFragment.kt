@@ -13,6 +13,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import zechs.drive.stream.R
 import zechs.drive.stream.databinding.FragmentSignInBinding
@@ -59,7 +60,13 @@ class SignInFragment : BaseFragment() {
         }
 
         binding.enterCode.setOnClickListener {
-            showCodeDialog()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Please note")
+                .setMessage(getString(R.string.important_note_message))
+                .setPositiveButton("Continue") { dialog, _ ->
+                    dialog.dismiss()
+                    showCodeDialog()
+                }.show()
         }
 
         loginObserver()
