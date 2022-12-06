@@ -32,7 +32,7 @@ class DialogCode(
             val authCode = codeText.editText!!.text.toString()
 
             if (authCode.isEmpty()) {
-                showToast(context.getString(R.string.please_enter_auth_code))
+                showToast(context.getString(R.string.please_enter_auth_url))
             } else {
                 onSubmitClickListener.invoke(authCode)
             }

@@ -27,7 +27,7 @@
             android:clickable="false"
             android:focusable="false"
             android:fontFamily="@font/roboto_medium"
-            android:text="@string/authorization_code"
+            android:text="@string/authorization_url"
             android:textColor="@color/textColor"
             android:textSize="21sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -61,7 +61,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
-            android:hint="@string/authorization_code"
+            android:hint="@string/authorization_url_hint"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvExample">
