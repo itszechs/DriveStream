@@ -1,5 +1,6 @@
 package zechs.drive.stream.ui.signin
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -9,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -53,9 +53,9 @@ class SignInFragment : BaseFragment() {
         _binding = FragmentSignInBinding.bind(view)
 
         binding.signInText.setOnClickListener {
-            CustomTabsIntent.Builder().build().also {
-                it.launchUrl(requireContext(), Uri.parse(AUTH_URL))
-            }
+            Intent().setAction(Intent.ACTION_VIEW)
+                .setData(Uri.parse(AUTH_URL))
+                .also { startActivity(it) }
         }
 
         binding.enterCode.setOnClickListener {
