@@ -5,11 +5,12 @@ import zechs.drive.stream.utils.util.Converter
 
 @Keep
 data class DriveFile(
-    val id: String,
+    var id: String,
     val name: String,
     val size: Long?,
     val mimeType: String,
-    val iconLink: String?
+    val iconLink: String?,
+    val shortcutDetails: ShortcutDetails
 ) {
     val humanSize = size?.let { Converter.toHumanSize(it) }
 

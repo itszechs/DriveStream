@@ -196,6 +196,19 @@ class FilesFragment : BaseFragment() {
             findNavController().navigate(action)
         } else if (file.isVideoFile) {
             launchVideoPlayer(file)
+        } else if (file.isShortcut) {
+            if (file.shortcutDetails.targetMimeType == "application/vnd.google-apps.folder") {
+                val action = FilesFragmentDirections.actionFilesFragmentSelf(
+                    name = file.name,
+                    query = "'${file.shortcutDetails.targetId}' in parents and trashed=false"
+                )
+                findNavController().navigate(action)
+            }
+            else if (file.shortcutDetails.targetMimeType!!.startsWith("video/")){
+                var videoShortcutFile = file
+                videoShortcutFile.id = file.shortcutDetails.targetId!!
+                launchVideoPlayer(videoShortcutFile)
+            }
         }
 
     }

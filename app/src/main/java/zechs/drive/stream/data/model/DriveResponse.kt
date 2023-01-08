@@ -19,6 +19,7 @@ data class Drive(
         name = name,
         size = null,
         mimeType = kind,
-        iconLink = null
+        iconLink = null,
+        shortcutDetails = ShortcutDetails()
     )
 }
