@@ -5,7 +5,7 @@ import zechs.drive.stream.utils.util.Converter
 
 @Keep
 data class DriveFile(
-    var id: String,
+    val id: String,
     val name: String,
     val size: Long?,
     val mimeType: String,

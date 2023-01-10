@@ -205,8 +205,7 @@ class FilesFragment : BaseFragment() {
                 findNavController().navigate(action)
             }
             else if (file.shortcutDetails.targetMimeType!!.startsWith("video/")){
-                var videoShortcutFile = file
-                videoShortcutFile.id = file.shortcutDetails.targetId!!
+                val videoShortcutFile = file.copy(id=file.shortcutDetails.targetId!!)
                 launchVideoPlayer(videoShortcutFile)
             }
         }
