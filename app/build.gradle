@@ -23,7 +23,7 @@ android {
         minSdk 28
         targetSdk 32
         versionCode 8
-        versionName "1.2.2"
+        versionName "1.2.3"
         archivesBaseName = "${applicationId}-${versionCode}"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

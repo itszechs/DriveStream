@@ -196,6 +196,18 @@ class FilesFragment : BaseFragment() {
             findNavController().navigate(action)
         } else if (file.isVideoFile) {
             launchVideoPlayer(file)
+        } else if (file.isShortcut) {
+            if (file.isShortcutFolder) {
+                val action = FilesFragmentDirections.actionFilesFragmentSelf(
+                    name = file.name,
+                    query = "'${file.shortcutDetails.targetId}' in parents and trashed=false"
+                )
+                findNavController().navigate(action)
+            }
+            else if (file.isShortcutVideo){
+                val videoShortcutFile = file.copy(id=file.shortcutDetails.targetId!!)
+                launchVideoPlayer(videoShortcutFile)
+            }
         }
 
     }

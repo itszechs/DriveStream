@@ -15,6 +15,13 @@ data class File(
     val size: Long?,
     val iconLink: String,
     val mimeType: String,
+    val shortcutDetails: ShortcutDetails = ShortcutDetails()
 ) {
-    fun toDriveFile() = DriveFile(id, name, size, mimeType, iconLink)
+    fun toDriveFile() = DriveFile(id, name, size, mimeType, iconLink, shortcutDetails)
 }
+
+@Keep
+data class ShortcutDetails(
+    val targetId: String? = null,
+    val targetMimeType: String? = null
+)
