@@ -21,5 +21,9 @@ data class DriveFile(
 
     val isShortcut = mimeType == "application/vnd.google-apps.shortcut"
 
+    val isShortcutFolder = shortcutDetails.targetMimeType == "application/vnd.google-apps.folder"
+
+    val isShortcutVideo = shortcutDetails.targetMimeType?.startsWith("video/")
+
     val iconLink128 = iconLink?.replace("16", "128")
 }

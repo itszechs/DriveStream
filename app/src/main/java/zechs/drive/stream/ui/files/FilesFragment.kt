@@ -197,14 +197,14 @@ class FilesFragment : BaseFragment() {
         } else if (file.isVideoFile) {
             launchVideoPlayer(file)
         } else if (file.isShortcut) {
-            if (file.shortcutDetails.targetMimeType == "application/vnd.google-apps.folder") {
+            if (file.isShortcutFolder) {
                 val action = FilesFragmentDirections.actionFilesFragmentSelf(
                     name = file.name,
                     query = "'${file.shortcutDetails.targetId}' in parents and trashed=false"
                 )
                 findNavController().navigate(action)
             }
-            else if (file.shortcutDetails.targetMimeType!!.startsWith("video/")){
+            else if (file.isShortcutVideo == true){
                 val videoShortcutFile = file.copy(id=file.shortcutDetails.targetId!!)
                 launchVideoPlayer(videoShortcutFile)
             }
