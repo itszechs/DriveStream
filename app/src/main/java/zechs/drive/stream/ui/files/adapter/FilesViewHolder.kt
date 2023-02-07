@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.request.RequestOptions
 import zechs.drive.stream.R
+import zechs.drive.stream.data.model.DriveFile
 import zechs.drive.stream.databinding.ItemDriveFileBinding
 import zechs.drive.stream.databinding.ItemLoadingBinding
 import zechs.drive.stream.utils.GlideApp
@@ -18,6 +19,23 @@ sealed class FilesViewHolder(
         private val itemBinding: ItemDriveFileBinding,
         val filesAdapter: FilesAdapter
     ) : FilesViewHolder(itemBinding) {
+
+        private fun setStarred(file: DriveFile, isStarred: Boolean?) {
+            if (isStarred == null) {
+                itemBinding.btnStar.isGone = true
+                return
+            }
+            itemBinding.btnStar.apply {
+                setImageResource(
+                    if (isStarred) {
+                        R.drawable.ic_starred_round_24
+                    } else R.drawable.ic_star_round_24
+                )
+                setOnClickListener {
+                    filesAdapter.onStarClickListener.invoke(file, !isStarred)
+                }
+            }
+        }
 
         fun bind(file: FilesDataModel.File) {
             val item = file.driveFile
@@ -47,6 +65,7 @@ sealed class FilesViewHolder(
                     filesAdapter.onClickListener.invoke(item)
                 }
 
+                setStarred(item, item.starred)
             }
         }
     }

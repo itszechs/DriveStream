@@ -9,6 +9,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import zechs.drive.stream.data.model.DriveFile
 import zechs.drive.stream.data.repository.DriveRepository
@@ -189,6 +192,54 @@ class FilesViewModel @Inject constructor(
                 )
             }
             else -> {}
+        }
+    }
+
+    private val _fileUpdate = MutableSharedFlow<String>()
+    val fileUpdate: SharedFlow<String>
+        get() = _fileUpdate.asSharedFlow()
+
+    fun starFile(
+        file: DriveFile,
+        starred: Boolean
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        try {
+            val update = driveRepository.updateFile(
+                fileId = file.id,
+                starred = starred
+            )
+            when (update) {
+                is Resource.Error -> {
+                    _fileUpdate.emit(update.message!!)
+                }
+                is Resource.Success -> {
+                    Log.d(TAG, "File updated")
+                    val files = response
+                    if (files != null) {
+                        val index = files.indexOfFirst {
+                            if (it is FilesDataModel.File) {
+                                it.driveFile.id == file.id
+                            } else false
+                        }
+
+                        if (index != -1) {
+                            val newFile = FilesDataModel.File(file.copy(starred = starred))
+                            files[index] = newFile
+                            _filesList.postValue(Resource.Success(files))
+                        }
+                    }
+                }
+                else -> {}
+            }
+        } catch (cancel: CancellationException) {
+            Log.d(TAG, cancel.message ?: "CancellationException")
+            _fileUpdate.emit("Unable to update file")
+        } catch (timeout: SocketTimeoutException) {
+            _fileUpdate.emit("Server timed out")
+            Log.d(TAG, timeout.message ?: "SocketTimeoutException")
+        } catch (e: Exception) {
+            _fileUpdate.emit(e.message ?: "Something went wrong")
+            Log.e(TAG, "Something went wrong", e)
         }
     }
 
