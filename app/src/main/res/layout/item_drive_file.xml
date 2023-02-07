@@ -31,6 +31,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
+            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:fontFamily="@font/roboto_medium"
             android:maxLines="3"
@@ -57,12 +58,25 @@
             app:layout_constraintTop_toBottomOf="@+id/tvFileName"
             tools:text="File size" />
 
+        <ProgressBar
+            android:id="@+id/starLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@null"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/btnStar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/btnStar"
+            app:layout_constraintTop_toTopOf="@+id/btnStar"
+            tools:visibility="visible" />
+
         <ImageButton
             android:id="@+id/btnStar"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
