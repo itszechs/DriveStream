@@ -9,8 +9,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import zechs.drive.stream.data.model.DriveFile
+import zechs.drive.stream.data.model.Starred
 import zechs.drive.stream.data.repository.DriveRepository
 import zechs.drive.stream.ui.files.FilesFragment.Companion.TAG
 import zechs.drive.stream.ui.files.adapter.FilesDataModel
@@ -189,6 +193,65 @@ class FilesViewModel @Inject constructor(
                 )
             }
             else -> {}
+        }
+    }
+
+    private val _fileUpdate = MutableSharedFlow<String>()
+    val fileUpdate: SharedFlow<String>
+        get() = _fileUpdate.asSharedFlow()
+
+    fun starFile(
+        file: DriveFile,
+        starred: Boolean
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        fun updateFileState(starredStarred: Starred) {
+            response?.indexOfFirst {
+                if (it is FilesDataModel.File) {
+                    it.driveFile.id == file.id
+                } else false
+            }?.let { index ->
+                if (index != -1) {
+                    val newFile = FilesDataModel.File(
+                        file.copy(starred = starredStarred)
+                    )
+                    response!![index] = newFile
+                    _filesList.postValue(Resource.Success(response!!))
+                }
+            }
+        }
+
+        try {
+            updateFileState(Starred.LOADING)
+
+            val update = driveRepository.updateFile(
+                fileId = file.id,
+                starred = starred
+            )
+            when (update) {
+                is Resource.Error -> {
+                    _fileUpdate.emit(update.message!!)
+                    updateFileState(if (starred) Starred.UNSTARRED else Starred.STARRED)
+                }
+                is Resource.Success -> {
+                    Log.d(TAG, "File updated")
+                    updateFileState(
+                        if (starred) Starred.STARRED else Starred.UNSTARRED
+                    )
+                }
+                else -> {}
+            }
+        } catch (cancel: CancellationException) {
+            updateFileState(if (starred) Starred.UNSTARRED else Starred.STARRED)
+            _fileUpdate.emit("Unable to update file")
+            Log.d(TAG, cancel.message ?: "CancellationException")
+        } catch (timeout: SocketTimeoutException) {
+            updateFileState(if (starred) Starred.UNSTARRED else Starred.STARRED)
+            _fileUpdate.emit("Server timed out")
+            Log.d(TAG, timeout.message ?: "SocketTimeoutException")
+        } catch (e: Exception) {
+            updateFileState(if (starred) Starred.UNSTARRED else Starred.STARRED)
+            _fileUpdate.emit(e.message ?: "Something went wrong")
+            Log.e(TAG, "Something went wrong", e)
         }
     }
 

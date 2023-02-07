@@ -12,8 +12,10 @@ import android.widget.TextView
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -89,6 +91,16 @@ class FilesFragment : BaseFragment() {
         setupRecyclerView()
         setupFilesObserver()
         mpvObserver()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.fileUpdate.collect { status ->
+                    showSnackBar(status)
+                }
+            }
+        }
+
+
     }
 
     private fun setupFilesObserver() {
@@ -125,6 +137,7 @@ class FilesFragment : BaseFragment() {
     }
 
     private fun onSuccess(files: List<FilesDataModel>) {
+        Log.d(TAG, "onSuccess(files=${files.size})")
         if (!viewModel.hasLoaded) {
             doTransition(MaterialFadeThrough())
         }
@@ -183,7 +196,12 @@ class FilesFragment : BaseFragment() {
     }
 
     private val filesAdapter by lazy {
-        FilesAdapter(onClickListener = { handleFileOnClick(it) })
+        FilesAdapter(
+            onClickListener = { handleFileOnClick(it) },
+            onStarClickListener = { file, isStarred ->
+                viewModel.starFile(file, isStarred)
+            }
+        )
     }
 
     private fun handleFileOnClick(file: DriveFile) {
