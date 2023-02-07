@@ -12,6 +12,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import zechs.drive.stream.BuildConfig
+import zechs.drive.stream.data.model.StarredAdapter
 import zechs.drive.stream.data.remote.DriveApi
 import zechs.drive.stream.data.remote.GithubApi
 import zechs.drive.stream.data.remote.TokenApi
@@ -81,6 +82,7 @@ object ApiModule {
     @Singleton
     fun provideMoshi(): Moshi {
         return Moshi.Builder()
+            .add(StarredAdapter())
             .add(KotlinJsonAdapterFactory())
             .build()
     }
