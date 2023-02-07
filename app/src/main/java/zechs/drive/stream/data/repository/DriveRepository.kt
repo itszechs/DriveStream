@@ -153,4 +153,26 @@ class DriveRepository @Inject constructor(
         return Resource.Error(error)
     }
 
+    suspend fun updateFile(
+        fileId: String,
+        starred: Boolean
+    ): Resource<Unit> {
+        val tokenResponse = sessionManager.fetchAccessToken()
+            ?: return Resource.Error("Access token can not be null")
+        return try {
+            val update = driveApi.updateFile(
+                fileId = fileId,
+                fileUpdateRequest = FileUpdateRequest(starred = starred),
+                accessToken = "Bearer ${tokenResponse.accessToken}"
+            )
+            if (update.isSuccessful) {
+                Resource.Success(Unit)
+            } else {
+                Resource.Error("Failed to update")
+            }
+        } catch (e: Exception) {
+            doOnError(e)
+        }
+    }
+
 }
