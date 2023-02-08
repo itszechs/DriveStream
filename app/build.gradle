@@ -22,8 +22,8 @@ android {
         applicationId "zechs.drive.stream"
         minSdk 28
         targetSdk 32
-        versionCode 7
-        versionName "1.2.1"
+        versionCode 8
+        versionName "1.2.3"
         archivesBaseName = "${applicationId}-${versionCode}"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -82,9 +82,6 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    // Custom Tabs
-    implementation "androidx.browser:browser:1.4.0"
-
     // Gson
     implementation "com.google.code.gson:gson:2.9.0"
 
@@ -116,17 +113,17 @@ dependencies {
     implementation "com.github.bumptech.glide:okhttp3-integration:4.12.0"
 
     // Coroutine Lifecycle Scopes
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
 
     // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
 
     // Dagger hilt
     implementation "com.google.dagger:hilt-android:2.40.1"
     kapt "com.google.dagger:hilt-compiler:2.40.1"
 
     // Splash
-    implementation "androidx.core:core-splashscreen:1.0.0-rc01"
+    implementation "androidx.core:core-splashscreen:1.0.0"
 
     // Navigational Components
     implementation "androidx.navigation:navigation-fragment-ktx:2.5.0"
@@ -135,11 +132,11 @@ dependencies {
     //Kotlin
     implementation "androidx.core:core-ktx:1.8.0"
 
-    implementation "androidx.appcompat:appcompat:1.4.2"
-    implementation "com.google.android.material:material:1.6.1"
+    implementation "androidx.appcompat:appcompat:1.5.1"
+    implementation "com.google.android.material:material:1.7.0"
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 
     testImplementation "junit:junit:4.13.2"
-    androidTestImplementation "androidx.test.ext:junit:1.1.3"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.4.0"
+    androidTestImplementation "androidx.test.ext:junit:1.1.4"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.0"
 }

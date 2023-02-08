@@ -27,7 +27,7 @@
             android:clickable="false"
             android:focusable="false"
             android:fontFamily="@font/roboto_medium"
-            android:text="@string/authorization_code"
+            android:text="@string/authorization_url"
             android:textColor="@color/textColor"
             android:textSize="21sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,6 +35,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvExample"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="24dp"
+            android:clickable="false"
+            android:ellipsize="end"
+            android:focusable="false"
+            android:maxLines="2"
+            android:text="@string/authorization_code_example"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
+            android:textColor="@color/textColor_74"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tf_code"
@@ -44,10 +61,10 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
-            android:hint="@string/authorization_code"
+            android:hint="@string/authorization_url_hint"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title">
+            app:layout_constraintTop_toBottomOf="@+id/tvExample">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"

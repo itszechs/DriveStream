@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 import zechs.drive.stream.R
 import zechs.drive.stream.data.model.LatestRelease
 import zechs.drive.stream.databinding.ActivityMainBinding
+import zechs.drive.stream.utils.AppTheme
 import zechs.drive.stream.utils.ext.navigateSafe
 import zechs.drive.stream.utils.state.Resource
 import zechs.drive.stream.utils.util.NotificationKeys.Companion.UPDATE_CHANNEL_CODE
@@ -58,8 +60,20 @@ class MainActivity : AppCompatActivity() {
         ) as NavHostFragment
         navController = navHostFragment.navController
 
+        themeObserver()
         updateObserver()
         redirectOnLogin()
+    }
+
+    private fun themeObserver() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.theme.collect { theme ->
+                    Log.d(TAG, "theme=${theme}")
+                    changeTheme(theme)
+                }
+            }
+        }
     }
 
     private fun doSplashScreen() {
@@ -167,4 +181,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun changeTheme(appTheme: AppTheme) {
+        val mode = when (appTheme) {
+            AppTheme.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+            AppTheme.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+            AppTheme.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+        AppCompatDelegate.setDefaultNightMode(mode)
+    }
 }

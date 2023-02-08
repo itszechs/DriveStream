@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#000000</color>
+    <color name="blackColor_74">#3D000000</color>
+    <color name="cardColor_50">#8025232A</color>
+    <color name="colorAccent">#6750a4</color>
+    <color name="textColor">#FFFFFF</color>
+    <color name="textColor_54">#8AFFFFFF</color>
+    <color name="textColor_74">#BDFFFFFF</color>
+    <color name="textColor_87">#DEFFFFFF</color>
+    <color name="fadedColor">#1c1b1f</color>
+</resources>
