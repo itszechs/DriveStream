@@ -47,4 +47,7 @@
     <string name="authorization_code_example">Ex: http://127.0.0.1:53682/?code=4/0BX2XfWi1VC9Iadsaa1hIX80rd17crGFCgyHgR_8rwkrIRJJf18LlSGbBWeg0wbZJdEZ3tm3A</string>
     <string name="important_note_message">Due to recent changes made by Google, it is no longer possible to directly copy authorization code from the webpage after completion of OAuth Flow.\n\nYou will need to copy the entire url from the browser address bar. This page will not load and will show an error.\n\nPlease copy the entire url from the address bar and paste it in the dialog box.</string>
     <string name="select_theme">Select theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">Follow system</string>
 </resources>

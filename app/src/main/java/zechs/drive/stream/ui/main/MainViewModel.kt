@@ -39,6 +39,9 @@ class MainViewModel @Inject constructor(
     private val _theme = MutableSharedFlow<AppTheme>()
     val theme = _theme.asSharedFlow()
 
+    var currentThemeIndex = 2
+        private set
+
     init {
         viewModelScope.launch {
             getTheme()
@@ -61,6 +64,7 @@ class MainViewModel @Inject constructor(
 
     private suspend fun getTheme() {
         val fetchTheme = themeManager.fetchTheme()
+        currentThemeIndex = fetchTheme.value
         _theme.emit(fetchTheme)
     }
 

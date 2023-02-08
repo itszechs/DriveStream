@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 import zechs.drive.stream.R
 import zechs.drive.stream.databinding.FragmentHomeBinding
 import zechs.drive.stream.ui.BaseFragment
+import zechs.drive.stream.ui.main.MainViewModel
+import zechs.drive.stream.utils.AppTheme
 import zechs.drive.stream.utils.ext.navigateSafe
 
 
@@ -30,6 +32,7 @@ class HomeFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private val viewModel by activityViewModels<HomeViewModel>()
+    private val mainViewModel by activityViewModels<MainViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -103,22 +106,50 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun setupToolbar() {
+        val themes = listOf(
+            getString(R.string.theme_dark),
+            getString(R.string.theme_light),
+            getString(R.string.theme_system)
+        )
         binding.toolbar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.action_logOut) {
-                MaterialAlertDialogBuilder(context!!)
-                    .setTitle(getString(R.string.log_out_dialog_title))
-                    .setNegativeButton(getString(R.string.no)) { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
-                        dialog.dismiss()
-                        Log.d(TAG, "Logging out...")
-                        viewModel.logOut()
-                    }
-                    .show()
-                return@setOnMenuItemClickListener true
+            when (item.itemId) {
+                R.id.action_logOut -> {
+                    MaterialAlertDialogBuilder(context!!)
+                        .setTitle(getString(R.string.log_out_dialog_title))
+                        .setNegativeButton(getString(R.string.no)) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
+                            dialog.dismiss()
+                            Log.d(TAG, "Logging out...")
+                            viewModel.logOut()
+                        }
+                        .show()
+                    return@setOnMenuItemClickListener true
+                }
+                R.id.action_theme -> {
+                    MaterialAlertDialogBuilder(context!!).apply {
+                        setTitle(getString(R.string.select_theme))
+                        setSingleChoiceItems(
+                            themes.toTypedArray(),
+                            mainViewModel.currentThemeIndex
+                        ) { dialog, item ->
+                            val theme = when (item) {
+                                AppTheme.DARK.value -> AppTheme.DARK
+                                AppTheme.LIGHT.value -> AppTheme.LIGHT
+                                AppTheme.SYSTEM.value -> AppTheme.SYSTEM
+                                else -> throw IllegalArgumentException("Unknown theme value")
+                            }
+                            mainViewModel.setTheme(theme)
+                            dialog.dismiss()
+                        }
+                    }.also { it.show() }
+                    return@setOnMenuItemClickListener true
+                }
+                else -> {
+                    return@setOnMenuItemClickListener false
+                }
             }
-            return@setOnMenuItemClickListener false
         }
     }
 
