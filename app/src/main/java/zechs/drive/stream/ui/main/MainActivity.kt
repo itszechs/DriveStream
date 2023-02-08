@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -57,6 +58,8 @@ class MainActivity : AppCompatActivity() {
             R.id.mainNavHostFragment
         ) as NavHostFragment
         navController = navHostFragment.navController
+
+        changeTheme(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 
         updateObserver()
         redirectOnLogin()
@@ -167,4 +170,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun changeTheme(@AppCompatDelegate.NightMode mode: Int) {
+        AppCompatDelegate.setDefaultNightMode(mode)
+    }
 }
