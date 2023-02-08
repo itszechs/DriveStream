@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
@@ -312,7 +311,7 @@ class FilesFragment : BaseFragment() {
     private fun setupRecyclerView() {
         val linearLayoutManager = LinearLayoutManager(
             /* context */ context,
-            /* orientation */ LinearLayout.VERTICAL,
+            /* orientation */ RecyclerView.VERTICAL,
             /* reverseLayout */ false
         )
         binding.rvList.apply {
