@@ -148,7 +148,7 @@ class FilesFragment : BaseFragment() {
         if (files.isEmpty()) {
             binding.error.apply {
                 root.isVisible = true
-                errorTxt.text = "No files found"
+                errorTxt.text = getString(R.string.no_files_found)
             }
         } else {
             binding.error.root.apply {
