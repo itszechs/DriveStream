@@ -11,10 +11,14 @@ import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.google.android.exoplayer2.*
@@ -40,6 +44,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import zechs.drive.stream.R
 import zechs.drive.stream.data.repository.DriveRepository
 import zechs.drive.stream.databinding.ActivityPlayerBinding
@@ -67,6 +72,9 @@ class PlayerActivity : AppCompatActivity() {
 
     // View binding
     private lateinit var binding: ActivityPlayerBinding
+
+    // ViewModel
+    private val viewModel by viewModels<PlayerViewModel>()
 
     // Exoplayer
     private lateinit var player: ExoPlayer
@@ -410,6 +418,7 @@ class PlayerActivity : AppCompatActivity() {
             .build()
 
         if (fileId != null) {
+            viewModel.getWatch(fileId)
             val mediaItem = MediaItem.Builder()
                 .setUri(getStreamUrl(fileId))
                 .build()
@@ -420,7 +429,29 @@ class PlayerActivity : AppCompatActivity() {
                 addMediaItem(mediaItem)
                 prepare()
             }.also { it.play() }
+
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.startDuration.collect { startPosition ->
+                        resumeVideo(startPosition)
+                    }
+                }
+            }
+
         }
+    }
+
+    private fun resumeVideo(startPosition: Long) {
+        player.addListener(object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+                if (isPlaying) {
+                    player.seekTo(startPosition)
+                    Log.d(TAG, "Seeking to $startPosition")
+                    player.removeListener(this)
+                }
+            }
+        })
     }
 
 
@@ -575,6 +606,22 @@ class PlayerActivity : AppCompatActivity() {
         }.also { it.show() }
     }
 
+    private fun saveProgress() {
+        val watchedDuration = player.currentPosition
+        val totalDuration = player.duration
+        val watchProgress = (watchedDuration.toDouble() / totalDuration.toDouble()).toFloat() * 100
+        if (watchProgress > 10) {
+            val fileId = intent.getStringExtra("fileId")!!
+            val title = intent.getStringExtra("title")!!
+            viewModel.saveWatch(
+                name = title,
+                videoId = fileId,
+                watchedDuration = watchedDuration,
+                totalDuration = totalDuration
+            )
+        }
+    }
+
     override fun onPictureInPictureModeChanged(
         isInPictureInPictureMode: Boolean,
         newConfig: Configuration
@@ -595,9 +642,10 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     override fun onStop() {
+        saveProgress()
+        player.pause()
         super.onStop()
         onStopCalled = true
-        player.pause()
     }
 
     override fun onResume() {
@@ -606,8 +654,9 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        saveProgress()
         releasePlayer()
+        super.onDestroy()
     }
 
 }
