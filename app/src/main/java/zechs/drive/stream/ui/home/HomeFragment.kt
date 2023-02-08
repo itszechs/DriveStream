@@ -154,7 +154,7 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun observeLogOutState() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.hasLoggedOut.collect {
                     if (it) {

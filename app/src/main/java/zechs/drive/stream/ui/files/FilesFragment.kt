@@ -159,7 +159,7 @@ class FilesFragment : BaseFragment() {
             }
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             filesAdapter.submitList(files.toMutableList())
         }
     }
