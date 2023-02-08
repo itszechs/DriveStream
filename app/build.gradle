@@ -16,12 +16,12 @@ android {
 
     properties.load(project.rootProject.file("local.properties").newDataInputStream())
 
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "zechs.drive.stream"
         minSdk 28
-        targetSdk 32
+        targetSdk 33
         versionCode 8
         versionName "1.2.3"
         archivesBaseName = "${applicationId}-${versionCode}"
@@ -72,10 +72,10 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["extension-*.aar"])
     implementation project(path: ':mpv')
 
-    def exoplayer_version = "2.18.0"
+    def exoplayer_version = "2.18.2"
     def moshi_version = "1.13.0"
     def retrofit_version = "2.9.0"
-    def room_version = "2.4.3"
+    def room_version = "2.5.0"
 
     // Room
     implementation "androidx.room:room-runtime:$room_version"
@@ -119,24 +119,24 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
 
     // Dagger hilt
-    implementation "com.google.dagger:hilt-android:2.40.1"
-    kapt "com.google.dagger:hilt-compiler:2.40.1"
+    implementation "com.google.dagger:hilt-android:2.44.2"
+    kapt "com.google.dagger:hilt-compiler:2.44.2"
 
     // Splash
     implementation "androidx.core:core-splashscreen:1.0.0"
 
     // Navigational Components
-    implementation "androidx.navigation:navigation-fragment-ktx:2.5.0"
-    implementation "androidx.navigation:navigation-ui-ktx:2.5.0"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.3"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
 
     //Kotlin
-    implementation "androidx.core:core-ktx:1.8.0"
+    implementation "androidx.core:core-ktx:1.9.0"
 
-    implementation "androidx.appcompat:appcompat:1.5.1"
-    implementation "com.google.android.material:material:1.7.0"
+    implementation "androidx.appcompat:appcompat:1.6.0"
+    implementation "com.google.android.material:material:1.8.0"
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 
     testImplementation "junit:junit:4.13.2"
-    androidTestImplementation "androidx.test.ext:junit:1.1.4"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.0"
+    androidTestImplementation "androidx.test.ext:junit:1.1.5"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
 }
