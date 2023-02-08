@@ -12,20 +12,28 @@ import android.view.View
 import android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import android.widget.SeekBar
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.transition.AutoTransition
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.launch
 import zechs.drive.stream.R
 import zechs.drive.stream.databinding.ActivityMpvBinding
 import zechs.drive.stream.databinding.PlayerControlViewBinding
+import zechs.drive.stream.ui.player.PlayerViewModel
 import zechs.drive.stream.utils.util.Constants.Companion.DRIVE_API
 import zechs.drive.stream.utils.util.Orientation
 import zechs.drive.stream.utils.util.getNextOrientation
@@ -36,7 +44,7 @@ import zechs.mpv.MPVView
 import zechs.mpv.utils.Utils
 import kotlin.math.roundToInt
 
-
+@AndroidEntryPoint
 class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
     companion object {
@@ -54,6 +62,9 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
     private lateinit var binding: ActivityMpvBinding
     private lateinit var player: MPVView
     private lateinit var controller: PlayerControlViewBinding
+
+    // ViewModel
+    private val viewModel by viewModels<PlayerViewModel>()
 
     // States
     private var activityIsForeground = true
@@ -218,6 +229,8 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
         Log.d(TAG, "MPVActivity(fileId=$fileId, title=$title, accessToken=$accessToken)")
 
+        viewModel.getWatch(fileId)
+
         controller.playerToolbar.title = title
 
         val playUri = getStreamUrl(fileId)
@@ -229,6 +242,20 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
             "Authorization: Bearer $accessToken"
         )
 
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.startDuration.consumeAsFlow().collect { startPosition ->
+                    resumeVideo(startPosition)
+                }
+            }
+        }
+
+    }
+
+    private fun resumeVideo(startPosition: Long) {
+        val startPositionInSeconds = startPosition / 1000
+        Log.d(TAG, "MPV(resumeVideo=${Utils.prettyTime(startPositionInSeconds.toInt())})")
+        MPVLib.setOptionString("start", Utils.prettyTime(startPositionInSeconds.toInt()))
     }
 
     private fun getStreamUrl(fileId: String): String {
@@ -477,6 +504,28 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
         }
     }
 
+    private fun saveProgress() {
+        val watchedDuration = player.timePos ?: return
+        val totalDuration = player.duration ?: return
+        Log.d(TAG, "MPV(current=$watchedDuration, total=$totalDuration)")
+        // convert these two values from seconds to milliseconds
+        val watchedDurationInMills = (watchedDuration * 1000).toLong()
+        val totalDurationInMills = (totalDuration * 1000).toLong()
+        Log.d(TAG, "MPV(current=$watchedDurationInMills, total=$totalDurationInMills)")
+        Log.d(TAG, "MPV(saveProgress=${Utils.prettyTime(watchedDuration)})")
+
+        val watchProgress = (watchedDuration.toDouble() / totalDuration.toDouble()).toFloat() * 100
+        if (watchProgress > 10) {
+            val fileId = intent.getStringExtra("fileId")!!
+            val title = intent.getStringExtra("title")!!
+            viewModel.saveWatch(
+                name = title,
+                videoId = fileId,
+                watchedDuration = watchedDurationInMills,
+                totalDuration = totalDurationInMills
+            )
+        }
+    }
     ////////////////    MPV EVENTS    ////////////////
 
     override fun eventProperty(property: String, value: Boolean) {
@@ -521,6 +570,8 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
 
     override fun onPause() {
+        saveProgress()
+
         activityIsForeground = false
 
         if (isFinishing) {
@@ -548,6 +599,8 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
 
     override fun onDestroy() {
         Log.v(TAG, "Exiting.")
+
+        saveProgress()
 
         @Suppress("DEPRECATION")
         audioManager.abandonAudioFocus(audioFocusChangeListener)

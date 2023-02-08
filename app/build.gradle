@@ -75,6 +75,12 @@ dependencies {
     def exoplayer_version = "2.18.0"
     def moshi_version = "1.13.0"
     def retrofit_version = "2.9.0"
+    def room_version = "2.4.3"
+
+    // Room
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
     // Gson
     implementation "com.google.code.gson:gson:2.9.0"
