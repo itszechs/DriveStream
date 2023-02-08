@@ -5,8 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import zechs.drive.stream.data.model.WatchList
 import zechs.drive.stream.data.repository.WatchListRepository
@@ -18,8 +17,8 @@ class PlayerViewModel @Inject constructor(
     private val watchListRepository: WatchListRepository
 ) : ViewModel() {
 
-    private val _startDuration = MutableSharedFlow<Long>()
-    val startDuration = _startDuration.asSharedFlow()
+    private val _startDuration = Channel<Long>(Channel.CONFLATED)
+    val startDuration = _startDuration
 
     fun getWatch(videoId: String) = viewModelScope.launch(Dispatchers.IO) {
         val video = watchListRepository.getWatch(videoId)
@@ -27,7 +26,7 @@ class PlayerViewModel @Inject constructor(
             Log.d(TAG, "Video not found in database")
         } else {
             Log.d(TAG, "Starting at ${video.watchedDuration}")
-            _startDuration.emit(video.watchedDuration)
+            _startDuration.send(video.watchedDuration)
         }
     }
 

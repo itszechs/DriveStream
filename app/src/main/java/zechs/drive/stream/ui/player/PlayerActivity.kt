@@ -44,6 +44,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import zechs.drive.stream.R
 import zechs.drive.stream.data.repository.DriveRepository
@@ -432,7 +433,7 @@ class PlayerActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.startDuration.collect { startPosition ->
+                    viewModel.startDuration.consumeAsFlow().collect { startPosition ->
                         resumeVideo(startPosition)
                     }
                 }
