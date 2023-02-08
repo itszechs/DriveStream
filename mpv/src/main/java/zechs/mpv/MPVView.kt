@@ -187,6 +187,12 @@ class MPVView(
         get() = MPVLib.getPropertyInt("time-pos")
         set(progress) = MPVLib.setPropertyInt("time-pos", progress!!)
 
+    // no setter only getter
+    var duration: Int?
+        get() = MPVLib.getPropertyInt("duration")
+        private set(duration) {
+            // do nothing
+        }
 
     class TrackDelegate {
         operator fun getValue(thisRef: Any?, property: KProperty<*>): Int {
