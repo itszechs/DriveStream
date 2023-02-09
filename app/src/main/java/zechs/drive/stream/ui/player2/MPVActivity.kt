@@ -605,8 +605,6 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver {
     override fun onDestroy() {
         Log.v(TAG, "Exiting.")
 
-        saveProgress()
-
         @Suppress("DEPRECATION")
         audioManager.abandonAudioFocus(audioFocusChangeListener)
 
