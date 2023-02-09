@@ -649,6 +649,7 @@ class PlayerActivity : AppCompatActivity() {
             if (isInPictureInPictureMode) hideController() else showController()
         }
         if (onStopCalled) {
+            saveProgress()
             finish()
         }
     }
@@ -658,8 +659,12 @@ class PlayerActivity : AppCompatActivity() {
         updateOrientation(newConfig)
     }
 
-    override fun onStop() {
+    override fun onPause() {
         saveProgress()
+        super.onPause()
+    }
+
+    override fun onStop() {
         player.pause()
         super.onStop()
         onStopCalled = true
@@ -671,7 +676,6 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        saveProgress()
         releasePlayer()
         super.onDestroy()
     }
