@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
@@ -53,7 +54,9 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        createUpdateNotificationChannel()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createUpdateNotificationChannel()
+        }
 
         val navHostFragment = supportFragmentManager.findFragmentById(
             R.id.mainNavHostFragment
