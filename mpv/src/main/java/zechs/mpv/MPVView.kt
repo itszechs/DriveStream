@@ -42,7 +42,9 @@ class MPVView(
             @Suppress("DEPRECATION")
             wm.defaultDisplay
         }
-        val refreshRate = display.mode.refreshRate
+        val refreshRate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            display.mode.refreshRate
+        } else 60.0F
         val deviceLanguage = Locale.getDefault().isO3Language
 
         Log.d(TAG, "Device language: $deviceLanguage")
