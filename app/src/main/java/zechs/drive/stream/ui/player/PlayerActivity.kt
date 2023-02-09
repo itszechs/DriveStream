@@ -14,6 +14,7 @@ import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
@@ -249,6 +250,7 @@ class PlayerActivity : AppCompatActivity() {
         playMedia()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun enterPIPMode() {
         this.enterPictureInPictureMode(
             PictureInPictureParams
@@ -639,6 +641,7 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onPictureInPictureModeChanged(
         isInPictureInPictureMode: Boolean,
         newConfig: Configuration
