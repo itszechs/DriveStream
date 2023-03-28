@@ -41,9 +41,10 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideTokenAuthenticator(
-        driveRepository: Lazy<DriveRepository>
+        driveRepository: Lazy<DriveRepository>,
+        sessionManager: Lazy<SessionManager>
     ): TokenAuthenticator {
-        return TokenAuthenticator(driveRepository)
+        return TokenAuthenticator(driveRepository, sessionManager)
     }
 
     @Provides

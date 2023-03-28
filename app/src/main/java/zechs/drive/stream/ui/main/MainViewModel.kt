@@ -54,8 +54,9 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun getLoginStatus(): Boolean {
-        val refreshToken = sessionManager.fetchRefreshToken()
-        return refreshToken != null
+        sessionManager.fetchClient() ?: return false
+        sessionManager.fetchRefreshToken() ?: return false
+        return true
     }
 
     private fun getLatestRelease() = viewModelScope.launch {
