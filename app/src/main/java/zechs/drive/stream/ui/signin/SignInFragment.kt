@@ -3,8 +3,8 @@ package zechs.drive.stream.ui.signin
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,12 +16,12 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import zechs.drive.stream.R
+import zechs.drive.stream.data.model.DriveClient
 import zechs.drive.stream.databinding.FragmentSignInBinding
 import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.ui.code.DialogCode
 import zechs.drive.stream.utils.ext.navigateSafe
 import zechs.drive.stream.utils.state.Resource
-import zechs.drive.stream.utils.util.Constants.Companion.AUTH_URL
 
 
 class SignInFragment : BaseFragment() {
@@ -54,8 +54,13 @@ class SignInFragment : BaseFragment() {
         _binding = FragmentSignInBinding.bind(view)
 
         binding.signInText.setOnClickListener {
+            if (!updateClient()) {
+                return@setOnClickListener
+            }
+            Log.d(TAG, "Auth url: ${viewModel.client!!.authUrl()}")
+
             Intent().setAction(Intent.ACTION_VIEW)
-                .setData(Uri.parse(AUTH_URL))
+                .setData(viewModel.client!!.authUrl())
                 .also { startActivity(it) }
         }
 
@@ -119,9 +124,33 @@ class SignInFragment : BaseFragment() {
     private fun isLoading(loading: Boolean) {
         binding.apply {
             this.loading.isVisible = loading
-            signInText.isVisible = !loading
+            layoutConfigure.isVisible = !loading
             enterCode.isVisible = !loading
         }
     }
 
+    private fun updateClient(): Boolean {
+        val clientId = binding.clientId.editText!!.text.toString()
+        val clientSecret = binding.clientSecret.editText!!.text.toString()
+        val redirectUri = binding.redirectUri.editText!!.text.toString()
+        val scopes = binding.scopes.editText!!.text.toString()
+        if (clientId.isEmpty()
+            || clientSecret.isEmpty()
+            || redirectUri.isEmpty()
+            || scopes.isEmpty()
+        ) {
+            Snackbar.make(
+                binding.root,
+                getString(R.string.fill_all_fields),
+                Snackbar.LENGTH_LONG
+            ).show()
+            return false
+        }
+
+        viewModel.client = DriveClient(
+            clientId, clientSecret,
+            redirectUri, listOf(scopes)
+        )
+        return true
+    }
 }

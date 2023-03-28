@@ -59,4 +59,5 @@
     <string name="need_help">Need help?</string>
     <string name="drive_scope">https://www.googleapis.com/auth/drive</string>
     <string name="scopes">Scopes</string>
+    <string name="fill_all_fields">Please fill all the fields</string>
 </resources>

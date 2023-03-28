@@ -9,6 +9,7 @@ import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import zechs.drive.stream.data.model.AuthorizationResponse
+import zechs.drive.stream.data.model.DriveClient
 import zechs.drive.stream.data.repository.DriveRepository
 import zechs.drive.stream.utils.state.Resource
 import javax.inject.Inject
@@ -22,6 +23,8 @@ class SignInViewModel @Inject constructor(
     val loginStatus: LiveData<Resource<AuthorizationResponse>>
         get() = _loginStatus
 
+    var client: DriveClient? = null
+
     fun requestRefreshToken(
         authCodeUri: String
     ) = viewModelScope.launch {
@@ -30,7 +33,11 @@ class SignInViewModel @Inject constructor(
         if (authCode == null) {
             _loginStatus.postValue(Resource.Error("Authorization code not found, please check url"))
         } else {
-            val response = driveRepository.get().fetchRefreshToken(authCode)
+            if (client == null) {
+                _loginStatus.postValue(Resource.Error("Client not found"))
+                return@launch
+            }
+            val response = driveRepository.get().fetchRefreshToken(client!!, authCode)
             _loginStatus.postValue(response)
         }
     }
