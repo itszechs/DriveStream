@@ -7,8 +7,6 @@ import zechs.drive.stream.data.remote.DriveApi
 import zechs.drive.stream.data.remote.TokenApi
 import zechs.drive.stream.utils.SessionManager
 import zechs.drive.stream.utils.state.Resource
-import zechs.drive.stream.utils.util.Constants.Companion.CLIENT_ID
-import zechs.drive.stream.utils.util.Constants.Companion.CLIENT_SECRET
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -75,6 +73,7 @@ class DriveRepository @Inject constructor(
      *
      */
     suspend fun fetchAccessToken(
+        client: DriveClient,
         forceRefresh: Boolean = false
     ): Resource<TokenResponse> {
         if (!forceRefresh) {
@@ -98,8 +97,8 @@ class DriveRepository @Inject constructor(
         return try {
             val token = tokenApi.get().getAccessToken(
                 request = RefreshTokenRequest(
-                    clientId = CLIENT_ID,
-                    clientSecret = CLIENT_SECRET,
+                    clientId = client.clientId,
+                    clientSecret = client.clientSecret,
                     refreshToken = refreshToken
                 )
             )
@@ -122,14 +121,16 @@ class DriveRepository @Inject constructor(
      *
      */
     suspend fun fetchRefreshToken(
+        client: DriveClient,
         authorizationCode: String
     ): Resource<AuthorizationResponse> {
         return try {
             Log.d(TAG, "Requesting refresh token with authCode=$authorizationCode)")
             val token = tokenApi.get().getRefreshToken(
                 request = AuthorizationTokenRequest(
-                    clientId = CLIENT_ID,
-                    clientSecret = CLIENT_SECRET,
+                    clientId = client.clientId,
+                    clientSecret = client.clientSecret,
+                    redirectUri = client.redirectUri,
                     authCode = authorizationCode
                 )
             )
@@ -137,6 +138,7 @@ class DriveRepository @Inject constructor(
             Log.d(TAG, "Received refresh token (${token.refreshToken})")
 
             // saving in data store
+            sessionManager.saveClient(client)
             sessionManager.saveRefreshToken(token.refreshToken)
             sessionManager.saveAccessToken(token.toTokenResponse())
 
