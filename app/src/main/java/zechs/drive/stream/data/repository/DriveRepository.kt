@@ -148,7 +148,7 @@ class DriveRepository @Inject constructor(
         }
     }
 
-    private fun <T> doOnError(e: Exception): Resource<T> {
+    private inline fun <reified T> doOnError(e: Exception): Resource<T> {
         e.printStackTrace()
         val error = e.message ?: "An unknown error occurred."
         Log.d(TAG, error)
