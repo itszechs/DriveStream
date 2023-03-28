@@ -19,6 +19,7 @@ import zechs.drive.stream.data.repository.DriveRepository
 import zechs.drive.stream.ui.files.FilesFragment.Companion.TAG
 import zechs.drive.stream.ui.files.adapter.FilesDataModel
 import zechs.drive.stream.utils.Event
+import zechs.drive.stream.utils.SessionManager
 import zechs.drive.stream.utils.state.Resource
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -26,7 +27,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FilesViewModel @Inject constructor(
-    private val driveRepository: DriveRepository
+    private val driveRepository: DriveRepository,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _filesList = MutableLiveData<Resource<List<FilesDataModel>>>()
@@ -176,7 +178,11 @@ class FilesViewModel @Inject constructor(
     fun fetchToken(file: DriveFile) = viewModelScope.launch {
         _token.postValue(Event(Resource.Loading()))
 
-        val tokenResponse = driveRepository.fetchAccessToken()
+        val client = sessionManager.fetchClient() ?: run {
+            _token.postValue(Event(Resource.Error("Client not found")))
+            return@launch
+        }
+        val tokenResponse = driveRepository.fetchAccessToken(client)
 
         when (tokenResponse) {
             is Resource.Success -> {
