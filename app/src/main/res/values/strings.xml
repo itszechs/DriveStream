@@ -52,4 +52,11 @@
     <string name="theme_system">Follow system</string>
     <string name="no_files_found">No files found</string>
     <string name="pip_not_supported">PiP mode is not supported on your device</string>
+    <string name="configure_your_drive_client">Configure your drive client</string>
+    <string name="client_id">Client ID</string>
+    <string name="client_secret">Client secret</string>
+    <string name="redirect_uri">Redirect uri</string>
+    <string name="need_help">Need help?</string>
+    <string name="drive_scope">https://www.googleapis.com/auth/drive</string>
+    <string name="scopes">Scopes</string>
 </resources>
