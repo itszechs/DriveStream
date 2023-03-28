@@ -20,6 +20,7 @@ import zechs.drive.stream.data.model.DriveClient
 import zechs.drive.stream.databinding.FragmentSignInBinding
 import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.ui.code.DialogCode
+import zechs.drive.stream.utils.ext.hideKeyboardWhenOffFocus
 import zechs.drive.stream.utils.ext.navigateSafe
 import zechs.drive.stream.utils.state.Resource
 
@@ -73,6 +74,10 @@ class SignInFragment : BaseFragment() {
                     showCodeDialog()
                 }.show()
         }
+
+        binding.clientId.editText!!.hideKeyboardWhenOffFocus()
+        binding.clientSecret.editText!!.hideKeyboardWhenOffFocus()
+        binding.redirectUri.editText!!.hideKeyboardWhenOffFocus()
 
         loginObserver()
     }
