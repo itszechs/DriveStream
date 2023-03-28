@@ -3,6 +3,7 @@ package zechs.drive.stream.ui.signin
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -23,6 +24,7 @@ import zechs.drive.stream.ui.code.DialogCode
 import zechs.drive.stream.utils.ext.hideKeyboardWhenOffFocus
 import zechs.drive.stream.utils.ext.navigateSafe
 import zechs.drive.stream.utils.state.Resource
+import zechs.drive.stream.utils.util.Constants.Companion.GUIDE_TO_MAKE_DRIVE_CLIENT
 
 
 class SignInFragment : BaseFragment() {
@@ -62,6 +64,13 @@ class SignInFragment : BaseFragment() {
 
             Intent().setAction(Intent.ACTION_VIEW)
                 .setData(viewModel.client!!.authUrl())
+                .also { startActivity(it) }
+        }
+
+
+        binding.btnHelp.setOnClickListener {
+            Intent().setAction(Intent.ACTION_VIEW)
+                .setData(Uri.parse(GUIDE_TO_MAKE_DRIVE_CLIENT))
                 .also { startActivity(it) }
         }
 
