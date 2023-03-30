@@ -7,11 +7,13 @@ import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
+import zechs.drive.stream.utils.SessionManager
 import zechs.drive.stream.utils.state.Resource
 import javax.inject.Inject
 
 class TokenAuthenticator @Inject constructor(
-    private val driveRepository: Lazy<DriveRepository>
+    private val driveRepository: Lazy<DriveRepository>,
+    private val sessionManager: Lazy<SessionManager>
 ) : Authenticator {
 
     companion object {
@@ -22,8 +24,12 @@ class TokenAuthenticator @Inject constructor(
         route: Route?, response: Response
     ): Request? {
 
+        val client = runBlocking {
+            sessionManager.get().fetchClient()
+        } ?: return null
+
         val tokenResponse = runBlocking {
-            driveRepository.get().fetchAccessToken(forceRefresh = true)
+            driveRepository.get().fetchAccessToken(client, forceRefresh = true)
         }
 
         if (tokenResponse is Resource.Success) {

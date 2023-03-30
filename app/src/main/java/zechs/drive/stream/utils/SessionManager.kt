@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
+import zechs.drive.stream.data.model.DriveClient
 import zechs.drive.stream.data.model.TokenResponse
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,6 +22,26 @@ class SessionManager @Inject constructor(
 ) {
 
     private val sessionStore = appContext.dataStore
+
+    suspend fun saveClient(client: DriveClient) {
+        val dataStoreKey = stringPreferencesKey(DRIVE_CLIENT)
+        sessionStore.edit { settings ->
+            settings[dataStoreKey] = gson.toJson(client)
+        }
+        Log.d(TAG, "saveClient: $client")
+    }
+
+    suspend fun fetchClient(): DriveClient? {
+        val dataStoreKey = stringPreferencesKey(DRIVE_CLIENT)
+        val preferences = sessionStore.data.first()
+        val value = preferences[dataStoreKey]
+        val client: DriveClient? = value?.let {
+            val type = object : TypeToken<DriveClient?>() {}.type
+            gson.fromJson(value, type)
+        }
+        Log.d(TAG, "fetchClient: $client")
+        return client
+    }
 
     suspend fun saveAccessToken(data: TokenResponse) {
         val dataStoreKey = stringPreferencesKey(ACCESS_TOKEN)
@@ -71,6 +92,7 @@ class SessionManager @Inject constructor(
             "DRIVE_SESSION"
         )
         const val TAG = "SessionManager"
+        const val DRIVE_CLIENT = "DRIVE_CLIENT"
         const val ACCESS_TOKEN = "ACCESS_TOKEN"
         const val REFRESH_TOKEN = "REFRESH_TOKEN"
     }

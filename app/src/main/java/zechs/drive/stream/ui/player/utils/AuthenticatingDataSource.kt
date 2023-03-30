@@ -7,6 +7,7 @@ import com.google.android.exoplayer2.util.Log
 import kotlinx.coroutines.runBlocking
 import zechs.drive.stream.data.repository.DriveRepository
 import zechs.drive.stream.ui.player.PlayerActivity.Companion.TAG
+import zechs.drive.stream.utils.SessionManager
 import zechs.drive.stream.utils.state.Resource
 import java.io.IOException
 
@@ -14,16 +15,19 @@ import java.io.IOException
 class AuthenticatingDataSource(
     private val wrappedDataSource: DefaultHttpDataSource,
     private val driveRepository: DriveRepository,
+    private val sessionManager: SessionManager
 ) : DataSource {
 
     class Factory(
         private val wrappedFactory: DefaultHttpDataSource.Factory,
-        private val driveRepository: DriveRepository
+        private val driveRepository: DriveRepository,
+        private val sessionManager: SessionManager
     ) : DataSource.Factory {
         override fun createDataSource(): AuthenticatingDataSource {
             return AuthenticatingDataSource(
                 wrappedFactory.createDataSource(),
-                driveRepository
+                driveRepository,
+                sessionManager
             )
         }
     }
@@ -41,10 +45,11 @@ class AuthenticatingDataSource(
         return try {
             wrappedDataSource.open(dataSpec)
         } catch (e: HttpDataSource.InvalidResponseCodeException) {
+            val client = runBlocking { sessionManager.fetchClient()!! }
             if (e.responseCode == 401) {
                 // Token expired, trying to refresh it
                 val token = runBlocking {
-                    driveRepository.fetchAccessToken(forceRefresh = true)
+                    driveRepository.fetchAccessToken(client, forceRefresh = true)
                 }
                 if (token is Resource.Success) {
                     val accessToken = token.data!!.accessToken
@@ -59,7 +64,7 @@ class AuthenticatingDataSource(
             if (e.responseCode == 403) {
                 // Unauthorized
                 val token = runBlocking {
-                    driveRepository.fetchAccessToken()
+                    driveRepository.fetchAccessToken(client)
                 }
                 if (token is Resource.Success) {
                     val accessToken = token.data!!.accessToken

@@ -55,6 +55,7 @@ import zechs.drive.stream.databinding.ActivityPlayerBinding
 import zechs.drive.stream.ui.player.utils.AuthenticatingDataSource
 import zechs.drive.stream.ui.player.utils.BufferConfig
 import zechs.drive.stream.ui.player.utils.CustomTrackNameProvider
+import zechs.drive.stream.utils.SessionManager
 import zechs.drive.stream.utils.util.Constants.Companion.DRIVE_API
 import zechs.drive.stream.utils.util.Orientation
 import zechs.drive.stream.utils.util.getNextOrientation
@@ -73,6 +74,9 @@ class PlayerActivity : AppCompatActivity() {
 
     @Inject
     lateinit var driveRepository: Lazy<DriveRepository>
+
+    @Inject
+    lateinit var sessionManager: Lazy<SessionManager>
 
     // View binding
     private lateinit var binding: ActivityPlayerBinding
@@ -358,7 +362,7 @@ class PlayerActivity : AppCompatActivity() {
             val dataSource = DefaultHttpDataSource.Factory()
 
             AuthenticatingDataSource
-                .Factory(dataSource, driveRepository.get())
+                .Factory(dataSource, driveRepository.get(), sessionManager.get())
                 .createDataSource()
         }
 
