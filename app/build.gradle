@@ -8,6 +8,8 @@ plugins {
 
 android {
 
+    namespace "zechs.drive.stream"
+
     packagingOptions {
         exclude "META-INF/DEPENDENCIES"
     }
