@@ -4,6 +4,8 @@ plugins {
 }
 
 android {
+    namespace "zechs.mpv"
+
     compileSdk 33
 
     defaultConfig {
