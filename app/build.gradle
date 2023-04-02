@@ -20,8 +20,8 @@ android {
         applicationId "zechs.drive.stream"
         minSdk 21
         targetSdk 33
-        versionCode 9
-        versionName "1.3.0"
+        versionCode 10
+        versionName "1.3.1"
         archivesBaseName = "${applicationId}-${versionCode}"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
