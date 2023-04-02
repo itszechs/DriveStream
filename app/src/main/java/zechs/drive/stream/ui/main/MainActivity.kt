@@ -1,18 +1,22 @@
 package zechs.drive.stream.ui.main
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -21,6 +25,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import zechs.drive.stream.R
@@ -39,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "MainActivity"
+        const val NOTIFICATION_PERMISSION_CODE = 2000
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -56,6 +62,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createUpdateNotificationChannel()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(
+                    this, Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) handlePermission()
         }
 
         val navHostFragment = supportFragmentManager.findFragmentById(
@@ -133,6 +146,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun createUpdateNotificationChannel() {
         val channel = NotificationChannel(
             UPDATE_CHANNEL_ID,
@@ -156,8 +170,12 @@ class MainActivity : AppCompatActivity() {
             /* context */ this,
             /* requestCode */ Random().nextInt(),
             /* intent */ intent,
-            /* flags */ PendingIntent.FLAG_IMMUTABLE
+            /* flags */
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                PendingIntent.FLAG_IMMUTABLE
+            else PendingIntent.FLAG_UPDATE_CURRENT
         )
+
 
         val defaultSoundUri = RingtoneManager.getDefaultUri(
             RingtoneManager.TYPE_NOTIFICATION
@@ -177,9 +195,43 @@ class MainActivity : AppCompatActivity() {
         }
 
         with(NotificationManagerCompat.from(this)) {
-            notify(
-                /* requestCode */ UPDATE_CHANNEL_CODE,
-                /* notification */ notificationBuilder.build()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ActivityCompat.checkSelfPermission(
+                        applicationContext,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    notify(
+                        /* requestCode */ UPDATE_CHANNEL_CODE,
+                        /* notification */ notificationBuilder.build()
+                    )
+                }
+            } else {
+                notify(
+                    /* requestCode */ UPDATE_CHANNEL_CODE,
+                    /* notification */ notificationBuilder.build()
+                )
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun handlePermission() {
+        if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+            Snackbar.make(
+                binding.root,
+                getString(R.string.notification_permission_rationale),
+                Snackbar.LENGTH_LONG
+            ).setAction(getString(R.string.grant)) {
+                requestPermissions(
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    NOTIFICATION_PERMISSION_CODE
+                )
+            }.show()
+        } else {
+            requestPermissions(
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                NOTIFICATION_PERMISSION_CODE
             )
         }
     }
