@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Drive Stream</string>
     <string name="something_went_wrong">Something went wrong</string>
-    <string name="trying_to_sign_in">Trying to sign-in…</string>
     <string name="my_drive">My drive</string>
     <string name="shared_drives">Shared drives</string>
     <string name="shared_with_me">Shared with me</string>
@@ -34,7 +33,6 @@
     <string name="track_off">Off</string>
     <string name="ui_chapter_fallback">Chapter %1$d (%2$s)</string>
     <string name="ui_chapter">%1$s (%2$s)</string>
-    <string name="no_chapters">No chapters</string>
     <string name="video">Video</string>
     <string name="sign_in">Sign in</string>
     <string name="enter_authorization_code">Enter authorization code?</string>
