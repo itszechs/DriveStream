@@ -47,6 +47,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/playerToolbar"
         app:layout_constraintVertical_bias="0.0"
+        tools:targetApi="o"
         tools:visibility="visible" />
 
     <LinearLayout
@@ -73,7 +74,8 @@
             android:tooltipText="@string/rewind_10_seconds"
             app:icon="@drawable/ic_rewind_skip_24"
             app:iconSize="24dp"
-            app:iconTint="@android:color/white" />
+            app:iconTint="@android:color/white"
+            tools:targetApi="o" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPlayPause"
@@ -94,7 +96,8 @@
             android:tooltipText="@string/skip_10_seconds"
             app:icon="@drawable/ic_forward_skip_24"
             app:iconSize="24dp"
-            app:iconTint="@android:color/white" />
+            app:iconTint="@android:color/white"
+            tools:targetApi="o" />
 
     </LinearLayout>
 
@@ -173,7 +176,8 @@
                 android:padding="16dp"
                 android:tooltipText="@string/lock"
                 app:icon="@drawable/ic_lock_24"
-                app:iconTint="@android:color/white" />
+                app:iconTint="@android:color/white"
+                tools:targetApi="o" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRotate"
@@ -183,7 +187,8 @@
                 android:padding="16dp"
                 android:tooltipText="@string/rotate"
                 app:icon="@drawable/ic_landscape_24"
-                app:iconTint="@android:color/white" />
+                app:iconTint="@android:color/white"
+                tools:targetApi="o" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPip"
@@ -193,7 +198,8 @@
                 android:padding="16dp"
                 android:tooltipText="@string/pip_mode"
                 app:icon="@drawable/ic_pip_24"
-                app:iconTint="@android:color/white" />
+                app:iconTint="@android:color/white"
+                tools:targetApi="o" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnResize"
@@ -203,7 +209,8 @@
                 android:padding="16dp"
                 android:tooltipText="@string/resize"
                 app:icon="@drawable/ic_resize_24"
-                app:iconTint="@android:color/white" />
+                app:iconTint="@android:color/white"
+                tools:targetApi="o" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSpeed"
@@ -213,7 +220,8 @@
                 android:padding="16dp"
                 android:tooltipText="@string/playback_speed"
                 app:icon="@drawable/ic_speed_24"
-                app:iconTint="@android:color/white" />
+                app:iconTint="@android:color/white"
+                tools:targetApi="o" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAudio"
@@ -223,7 +231,8 @@
                 android:padding="16dp"
                 android:tooltipText="@string/audio"
                 app:icon="@drawable/ic_audio_24"
-                app:iconTint="@android:color/white" />
+                app:iconTint="@android:color/white"
+                tools:targetApi="o" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSubtitle"
@@ -233,7 +242,8 @@
                 android:padding="16dp"
                 android:tooltipText="@string/subtitles"
                 app:icon="@drawable/ic_subtitles_24"
-                app:iconTint="@android:color/white" />
+                app:iconTint="@android:color/white"
+                tools:targetApi="o" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnChapter"
@@ -243,7 +253,8 @@
                 android:padding="16dp"
                 android:tooltipText="@string/chapters"
                 app:icon="@drawable/ic_chapter_24"
-                app:iconTint="@android:color/white" />
+                app:iconTint="@android:color/white"
+                tools:targetApi="o" />
 
         </LinearLayout>
     </HorizontalScrollView>

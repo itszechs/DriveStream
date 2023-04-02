@@ -24,7 +24,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting"
         android:windowSoftInputMode="adjustPan|adjustResize"
-        tools:ignore="DataExtractionRules">
+        tools:ignore="DataExtractionRules"
+        tools:targetApi="tiramisu">
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
@@ -43,7 +44,8 @@
             android:keepScreenOn="true"
             android:resizeableActivity="true"
             android:supportsPictureInPicture="true"
-            android:theme="@style/Theme.Fullscreen" />
+            android:theme="@style/Theme.Fullscreen"
+            tools:targetApi="n" />
 
         <activity
             android:name=".ui.player2.MPVActivity"
@@ -52,7 +54,8 @@
             android:launchMode="singleTask"
             android:resizeableActivity="true"
             android:supportsPictureInPicture="true"
-            android:theme="@style/Theme.Fullscreen" />
+            android:theme="@style/Theme.Fullscreen"
+            tools:targetApi="n" />
 
     </application>
 
