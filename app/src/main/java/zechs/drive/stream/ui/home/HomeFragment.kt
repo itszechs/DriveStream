@@ -114,7 +114,7 @@ class HomeFragment : BaseFragment() {
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_logOut -> {
-                    MaterialAlertDialogBuilder(context!!)
+                    MaterialAlertDialogBuilder(requireContext())
                         .setTitle(getString(R.string.log_out_dialog_title))
                         .setNegativeButton(getString(R.string.no)) { dialog, _ ->
                             dialog.dismiss()
@@ -128,7 +128,7 @@ class HomeFragment : BaseFragment() {
                     return@setOnMenuItemClickListener true
                 }
                 R.id.action_theme -> {
-                    MaterialAlertDialogBuilder(context!!).apply {
+                    MaterialAlertDialogBuilder(requireContext()).apply {
                         setTitle(getString(R.string.select_theme))
                         setSingleChoiceItems(
                             themes.toTypedArray(),
@@ -159,9 +159,9 @@ class HomeFragment : BaseFragment() {
                 viewModel.hasLoggedOut.collect {
                     if (it) {
                         // restart activity
-                        activity!!.finish()
+                        requireActivity().finish()
                         delay(250L)
-                        activity!!.startActivity(activity!!.intent)
+                        requireActivity().startActivity(requireActivity().intent)
                     }
                 }
             }

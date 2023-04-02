@@ -233,7 +233,7 @@ class FilesFragment : BaseFragment() {
 
         val items = arrayOf("ExoPlayer", "MPV (Experimental)")
 
-        MaterialAlertDialogBuilder(context!!)
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.play_using))
             .setItems(items) { dialog, which ->
                 when (which) {
