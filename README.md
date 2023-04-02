@@ -5,8 +5,7 @@
   Drive Stream
 </h1>
 <p align="center">
-  Google drive client with only one purpose that is to stream video files unlike the official app,
-  this app streams the actual files instead of transcoded streams.
+Stream your video files directly from Google Drive with this specialized client. Unlike the official app, this app streams the original files for a better viewing experience. Download now and start streaming your favorite videos from Google Drive.
 </p>
 
 <p align="center">
@@ -28,30 +27,20 @@
 </div>
 
 <br>
-<br>
 
 ## Screenshots
 
-Home|Pagination|Player
-:-----:|:--------------:|:-----------:|
-![home](https://user-images.githubusercontent.com/52543663/174775309-a40f70b1-f66d-413e-a2e2-10392b745e11.png) | ![pagination](https://user-images.githubusercontent.com/52543663/174775303-72179030-e769-4943-ab2f-ef9851053101.png) | ![player](https://user-images.githubusercontent.com/52543663/174775314-434db667-05e0-4af7-bdf6-5e33ba6e5152.png)
+Splash|Home|Themes
+:-----:|:-------------------------------:|:-----------:|
+![splash](https://user-images.githubusercontent.com/52543663/229365138-dd843448-ec71-40ac-b2b8-af2080bc55d5.png)|![home](https://user-images.githubusercontent.com/52543663/229365159-992915d4-f5df-4429-9374-15c8656ac541.png)|![themes](https://user-images.githubusercontent.com/52543663/229365393-6f7dff70-aca9-4fdd-91a5-ab66e6505ed6.png)
+Pagination|Players|Playback
+![pagination](https://user-images.githubusercontent.com/52543663/229365224-e2e4a4b0-44ea-4c24-87d9-9e078bf0332a.png)|![playback](https://user-images.githubusercontent.com/52543663/229365431-b39c0d2c-34cc-4891-b7ee-8dda376f47a2.png)|![player](https://user-images.githubusercontent.com/52543663/229365226-606f6eb7-2041-4dcf-9efb-27f4abef0b27.png)
+
 
 ## Download
 
 Go to the [Releases](https://github.com/itsZECHS/DriveStream/releases) to download the latest APK.
 
-## How to Build?
-
-- Create a Google Console Project
-- [Enable Drive API](https://developers.google.com/drive/api/guides/enable-drive-api#enable_the_drive_api)
-- [Create OAuth Client](https://console.developers.google.com/apis/credentials/oauthclient) (
-  Application type:
-  Web application)
-- Add `CLIENT_ID` & `CLIENT_SECRET` in `local.properties`
-
-Note: You can configure all the constants
-in [Constants.kt](https://github.com/itszechs/DriveStream/blob/master/app/src/main/java/zechs/drive/stream/utils/util/Constants.kt) (
-client id, secret, redirect uri etc.)
 
 ## What scopes are used?
 
@@ -73,4 +62,15 @@ download the file in order to stream it.
 Thanks to [mpv-android](https://github.com/mpv-android) for buildscripts to compile `libMPV`
 and `MPVLib` `MPVView`.
 
-Note: App releases are built using [rclone](https://github.com/rclone/rclone)'s client id.
+## Note
+
+Starting [v1.3.1](https://github.com/itszechs/DriveStream/tree/1.3.1) users MUST create their own OAuth client to continue using the app.
+
+
+<details>
+  <summary>A step-by-step video guide on how to create an OAuth client.</summary>
+  
+
+  https://user-images.githubusercontent.com/52543663/229366054-29e67440-9920-4504-8e1d-4f8eda367f2b.mp4
+  
+</details>
