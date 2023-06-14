@@ -46,9 +46,9 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             getTheme()
             val status = getLoginStatus()
+            _hasLoggedIn.value = status
             delay(250L)
             _isLoading.value = false
-            _hasLoggedIn.value = status
         }
         getLatestRelease() // check for update
     }
