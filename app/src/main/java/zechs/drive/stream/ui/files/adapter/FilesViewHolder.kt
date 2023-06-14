@@ -34,6 +34,7 @@ sealed class FilesViewHolder(
                         }
                     }
                 }
+
                 Starred.STARRED -> {
                     itemBinding.apply {
                         btnStar.isInvisible = false
@@ -44,12 +45,14 @@ sealed class FilesViewHolder(
                         }
                     }
                 }
+
                 Starred.LOADING -> {
                     itemBinding.apply {
                         btnStar.isInvisible = true
                         starLoading.isGone = false
                     }
                 }
+
                 Starred.UNKNOWN -> {
                     itemBinding.apply {
                         btnStar.isGone = true
@@ -85,6 +88,11 @@ sealed class FilesViewHolder(
 
                 root.setOnClickListener {
                     filesAdapter.onClickListener.invoke(item)
+                }
+
+                root.setOnLongClickListener {
+                    filesAdapter.onLongClickListener.invoke(item)
+                    return@setOnLongClickListener true
                 }
 
                 setStarred(item, item.starred)

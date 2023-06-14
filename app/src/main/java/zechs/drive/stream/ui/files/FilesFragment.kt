@@ -117,10 +117,12 @@ class FilesFragment : BaseFragment() {
             is Resource.Success -> response.data?.let { files ->
                 onSuccess(files)
             }
+
             is Resource.Error -> {
                 showSnackBar(response.message)
                 showError(response.message)
             }
+
             is Resource.Loading -> {
                 isLoading = true
                 if (!viewModel.hasLoaded || viewModel.hasFailed) {
@@ -197,10 +199,23 @@ class FilesFragment : BaseFragment() {
     private val filesAdapter by lazy {
         FilesAdapter(
             onClickListener = { handleFileOnClick(it) },
+            onLongClickListener = { handleFileOnLongPress(it) },
             onStarClickListener = { file, isStarred ->
                 viewModel.starFile(file, isStarred)
             }
         )
+    }
+
+    private fun handleFileOnLongPress(file: DriveFile) {
+        Log.d(TAG, file.toString())
+        if (file.isVideoFile) {
+            launchVideoPlayer(file)
+        } else if (file.isShortcut) {
+            if (file.isShortcutVideo) {
+                val videoShortcutFile = file.copy(id = file.shortcutDetails.targetId!!)
+                launchVideoPlayer(videoShortcutFile)
+            }
+        }
     }
 
     private fun handleFileOnClick(file: DriveFile) {
@@ -212,7 +227,7 @@ class FilesFragment : BaseFragment() {
             )
             findNavController().navigate(action)
         } else if (file.isVideoFile) {
-            launchVideoPlayer(file)
+            viewModel.fetchToken(file)
         } else if (file.isShortcut) {
             if (file.isShortcutFolder) {
                 val action = FilesFragmentDirections.actionFilesFragmentSelf(
@@ -220,10 +235,9 @@ class FilesFragment : BaseFragment() {
                     query = "'${file.shortcutDetails.targetId}' in parents and trashed=false"
                 )
                 findNavController().navigate(action)
-            }
-            else if (file.isShortcutVideo){
-                val videoShortcutFile = file.copy(id=file.shortcutDetails.targetId!!)
-                launchVideoPlayer(videoShortcutFile)
+            } else if (file.isShortcutVideo) {
+                val videoShortcutFile = file.copy(id = file.shortcutDetails.targetId!!)
+                viewModel.fetchToken(videoShortcutFile)
             }
         }
 
@@ -231,7 +245,7 @@ class FilesFragment : BaseFragment() {
 
     private fun launchVideoPlayer(file: DriveFile) {
 
-        val items = arrayOf("ExoPlayer", "MPV (Experimental)")
+        val items = arrayOf("ExoPlayer", "MPV")
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.play_using))
@@ -251,9 +265,11 @@ class FilesFragment : BaseFragment() {
                     is Resource.Success -> {
                         launchMpv(res.data!!)
                     }
+
                     is Resource.Error -> {
                         showSnackBar(res.message!!)
                     }
+
                     else -> {}
                 }
             }

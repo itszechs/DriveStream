@@ -10,6 +10,7 @@ import zechs.drive.stream.databinding.ItemLoadingBinding
 
 class FilesAdapter(
     val onClickListener: (DriveFile) -> Unit,
+    val onLongClickListener: (DriveFile) -> Unit,
     val onStarClickListener: (DriveFile, Boolean) -> Unit
 ) : ListAdapter<FilesDataModel, FilesViewHolder>(FilesItemDiffCallback()) {
 
