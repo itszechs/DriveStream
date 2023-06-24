@@ -43,11 +43,20 @@ class MainViewModel @Inject constructor(
     var currentThemeIndex = 2
         private set
 
+    private val _lastUpdated = MutableStateFlow<String?>(null)
+    val lastUpdated = _lastUpdated.asStateFlow()
+
+    var isChecking = false
+        private set
+
     init {
         viewModelScope.launch {
             getTheme()
             val status = getLoginStatus()
-            if (status) getPlayer()
+            if (status) {
+                getPlayer()
+                getLastUpdated()
+            }
             _hasLoggedIn.value = status
             delay(250L)
             _isLoading.value = false
@@ -61,8 +70,17 @@ class MainViewModel @Inject constructor(
         return true
     }
 
-    private fun getLatestRelease() = viewModelScope.launch {
+    fun getLatestRelease() = viewModelScope.launch {
+        _latest.postValue(Resource.Loading())
+        isChecking = true
         _latest.postValue(githubRepository.getLatestRelease())
+        isChecking = false
+        appSettings.saveLastUpdated()
+        getLastUpdated()
+    }
+
+    private fun getLastUpdated() = viewModelScope.launch {
+        _lastUpdated.emit(appSettings.fetchLastUpdated())
     }
 
     private suspend fun getTheme() {

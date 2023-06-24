@@ -127,6 +127,7 @@
                 android:padding="16dp">
 
                 <ProgressBar
+                    android:id="@+id/progressBarChecking"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:visibility="invisible"
@@ -147,6 +148,7 @@
                         android:textAppearance="?attr/textAppearanceTitleMedium" />
 
                     <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/lastCheckedLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBodySmall"

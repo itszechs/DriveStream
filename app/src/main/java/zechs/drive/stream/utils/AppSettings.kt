@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
+import zechs.drive.stream.utils.util.Converter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,6 +23,7 @@ class AppSettings @Inject constructor(
         const val TAG = "AppSettings"
         const val APP_THEME = "APP_THEME"
         const val VIDEO_PLAYER = "VIDEO_PLAYER"
+        const val LAST_UPDATED = "LAST_UPDATED"
     }
 
     private val sessionStore = appContext.dataStore
@@ -63,6 +65,24 @@ class AppSettings @Inject constructor(
         }
         Log.d(TAG, "fetchPlayer: $videoPlayer")
         return videoPlayer
+    }
+
+    suspend fun saveLastUpdated() {
+        val dataStoreKey = stringPreferencesKey(LAST_UPDATED)
+        val lastUpdated = System.currentTimeMillis()
+        sessionStore.edit { settings ->
+            settings[dataStoreKey] = lastUpdated.toString()
+        }
+        Log.d(TAG, "saveLastUpdated: ${Converter.fromTimeInMills(lastUpdated)}")
+    }
+
+    suspend fun fetchLastUpdated(): String? {
+        val dataStoreKey = stringPreferencesKey(LAST_UPDATED)
+        val preferences = sessionStore.data.first()
+        val lastUpdated = preferences[dataStoreKey] ?: return null
+        val parsed = Converter.fromTimeInMills(lastUpdated.toLong())
+        Log.d(TAG, "fetchLastUpdated: $parsed")
+        return parsed
     }
 }
 
