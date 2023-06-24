@@ -86,6 +86,10 @@ class HomeFragment : BaseFragment() {
                 query = "'root' in parents and trashed=true"
             )
 
+            btnAppSettings.setOnClickListener {
+                findNavController().navigateSafe(R.id.action_homeFragment_to_settingsFragment)
+            }
+
         }
 
         setupToolbar()

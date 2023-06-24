@@ -46,7 +46,14 @@
         <action
             android:id="@+id/action_homeFragment_to_filesFragment"
             app:destination="@id/filesFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="zechs.drive.stream.ui.settings.SettingsFragment"
+        android:label="SettingsFragment" />
 
 </navigation>
