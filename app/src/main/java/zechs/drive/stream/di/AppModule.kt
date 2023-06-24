@@ -8,7 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import zechs.drive.stream.utils.SessionManager
-import zechs.drive.stream.utils.ThemeManager
+import zechs.drive.stream.utils.AppSettings
 import javax.inject.Singleton
 
 
@@ -33,6 +33,6 @@ object AppModule {
     @Provides
     fun provideThemeDataStore(
         @ApplicationContext appContext: Context
-    ): ThemeManager = ThemeManager(appContext)
+    ): AppSettings = AppSettings(appContext)
 
 }

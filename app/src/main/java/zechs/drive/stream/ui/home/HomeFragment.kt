@@ -17,8 +17,6 @@ import kotlinx.coroutines.launch
 import zechs.drive.stream.R
 import zechs.drive.stream.databinding.FragmentHomeBinding
 import zechs.drive.stream.ui.BaseFragment
-import zechs.drive.stream.ui.main.MainViewModel
-import zechs.drive.stream.utils.AppTheme
 import zechs.drive.stream.utils.ext.navigateSafe
 
 
@@ -32,7 +30,6 @@ class HomeFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private val viewModel by activityViewModels<HomeViewModel>()
-    private val mainViewModel by activityViewModels<MainViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,6 +83,10 @@ class HomeFragment : BaseFragment() {
                 query = "'root' in parents and trashed=true"
             )
 
+            btnAppSettings.setOnClickListener {
+                findNavController().navigateSafe(R.id.action_homeFragment_to_settingsFragment)
+            }
+
         }
 
         setupToolbar()
@@ -106,11 +107,6 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun setupToolbar() {
-        val themes = listOf(
-            getString(R.string.theme_dark),
-            getString(R.string.theme_light),
-            getString(R.string.theme_system)
-        )
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_logOut -> {
@@ -127,25 +123,7 @@ class HomeFragment : BaseFragment() {
                         .show()
                     return@setOnMenuItemClickListener true
                 }
-                R.id.action_theme -> {
-                    MaterialAlertDialogBuilder(requireContext()).apply {
-                        setTitle(getString(R.string.select_theme))
-                        setSingleChoiceItems(
-                            themes.toTypedArray(),
-                            mainViewModel.currentThemeIndex
-                        ) { dialog, item ->
-                            val theme = when (item) {
-                                AppTheme.DARK.value -> AppTheme.DARK
-                                AppTheme.LIGHT.value -> AppTheme.LIGHT
-                                AppTheme.SYSTEM.value -> AppTheme.SYSTEM
-                                else -> throw IllegalArgumentException("Unknown theme value")
-                            }
-                            mainViewModel.setTheme(theme)
-                            dialog.dismiss()
-                        }
-                    }.also { it.show() }
-                    return@setOnMenuItemClickListener true
-                }
+
                 else -> {
                     return@setOnMenuItemClickListener false
                 }

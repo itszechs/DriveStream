@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -23,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,8 +34,10 @@ import zechs.drive.stream.databinding.FragmentFilesBinding
 import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.ui.files.adapter.FilesAdapter
 import zechs.drive.stream.ui.files.adapter.FilesDataModel
+import zechs.drive.stream.ui.main.MainViewModel
 import zechs.drive.stream.ui.player.PlayerActivity
 import zechs.drive.stream.ui.player2.MPVActivity
+import zechs.drive.stream.utils.VideoPlayer
 import zechs.drive.stream.utils.state.Resource
 
 
@@ -49,6 +51,7 @@ class FilesFragment : BaseFragment() {
     private var _binding: FragmentFilesBinding? = null
     private val binding get() = _binding!!
 
+    private val mainViewModel by activityViewModels<MainViewModel>()
     private val viewModel by lazy {
         ViewModelProvider(this)[FilesViewModel::class.java]
     }
@@ -244,18 +247,10 @@ class FilesFragment : BaseFragment() {
     }
 
     private fun launchVideoPlayer(file: DriveFile) {
-
-        val items = arrayOf("ExoPlayer", "MPV")
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.play_using))
-            .setItems(items) { dialog, which ->
-                when (which) {
-                    0 -> launchExo(file)
-                    1 -> viewModel.fetchToken(file)
-                }
-                dialog.dismiss()
-            }.show()
+        when (mainViewModel.currentPlayerIndex) {
+            VideoPlayer.EXO_PLAYER -> launchExo(file)
+            VideoPlayer.MPV -> viewModel.fetchToken(file)
+        }
     }
 
     private fun mpvObserver() {

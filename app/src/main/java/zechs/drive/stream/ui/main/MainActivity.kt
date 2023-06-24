@@ -134,10 +134,10 @@ class MainActivity : AppCompatActivity() {
                 is Resource.Success -> {
                     val release = it.data!!
                     if (release.isLatest()) {
+                        Log.d(TAG, "Already on latest version")
+                    } else {
                         Log.d(TAG, "Newer version of app is available (latest=${release.tagName})")
                         sendUpdateNotification(release)
-                    } else {
-                        Log.d(TAG, "Already on latest version")
                     }
                 }
                 is Resource.Error -> Log.d(TAG, it.message!!)

@@ -61,6 +61,12 @@
             android:text="@string/trashed"
             app:icon="@drawable/ic_delete_24" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAppSettings"
+            style="@style/IconButtonTheme"
+            android:text="@string/app_settings"
+            app:icon="@drawable/ic_settings_24" />
+
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
