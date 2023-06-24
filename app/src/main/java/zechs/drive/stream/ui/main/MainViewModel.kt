@@ -49,9 +49,16 @@ class MainViewModel @Inject constructor(
     var isChecking = false
         private set
 
+    private val _showAds = MutableLiveData<Boolean>()
+    val showAds: LiveData<Boolean> = _showAds
+
+    var adsEnabled = false
+        private set
+
     init {
         viewModelScope.launch {
             getTheme()
+            getEnableAds()
             val status = getLoginStatus()
             if (status) {
                 getPlayer()
@@ -105,6 +112,17 @@ class MainViewModel @Inject constructor(
     fun setPlayer(player: VideoPlayer) = viewModelScope.launch {
         appSettings.savePlayer(player)
         getPlayer()
+    }
+
+    private suspend fun getEnableAds() {
+        val fetchEnableAds = appSettings.fetchEnableAds()
+        adsEnabled = fetchEnableAds
+        _showAds.postValue(fetchEnableAds)
+    }
+
+    fun setEnableAds(enable: Boolean) = viewModelScope.launch {
+        appSettings.saveEnableAds(enable)
+        getEnableAds()
     }
 
 }

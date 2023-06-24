@@ -8,6 +8,10 @@ plugins {
     id "com.google.firebase.crashlytics"
 }
 
+def localPropertiesFile = rootProject.file("local.properties")
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(localPropertiesFile))
+
 android {
 
     namespace "zechs.drive.stream"
@@ -27,6 +31,9 @@ android {
         archivesBaseName = "${applicationId}-${versionCode}"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        resValue "string", "ad_app_id", localProperties['ad.appid']
+        buildConfigField "String", "ad_home_banner", localProperties['ad.home.banner']
     }
 
     buildTypes {
