@@ -77,6 +77,8 @@ dependencies {
     implementation "com.google.firebase:firebase-analytics-ktx"
     // Crashlytics
     implementation "com.google.firebase:firebase-crashlytics-ktx"
+    // Admob
+    implementation "com.google.android.gms:play-services-ads:22.1.0"
 
     // Room
     implementation "androidx.room:room-runtime:$room_version"
