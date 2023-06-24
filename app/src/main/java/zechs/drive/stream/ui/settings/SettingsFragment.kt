@@ -56,6 +56,7 @@ class SettingsFragment : BaseFragment() {
         setupThemeMenu()
         setupDefaultPlayerMenu()
         setupCheckForUpdates()
+        setupAdsSetting()
     }
 
     private fun setupThemeMenu() {
@@ -155,6 +156,14 @@ class SettingsFragment : BaseFragment() {
             }
         }
 
+    }
+
+    private fun setupAdsSetting() {
+        binding.switchAdsSupport.isChecked = mainViewModel.adsEnabled
+        binding.settingAdsSupport.setOnClickListener {
+            binding.switchAdsSupport.isChecked = !binding.switchAdsSupport.isChecked
+            mainViewModel.setEnableAds(binding.switchAdsSupport.isChecked)
+        }
     }
 
     private fun showSnackBar(message: String) {
