@@ -67,4 +67,6 @@
     <string name="check_for_updates">Check for updates</string>
     <string name="exoplayer">ExoPlayer</string>
     <string name="mpv">MPV</string>
+    <string name="enable_ads">Enable Ads</string>
+    <string name="support_the_developer_by_enabling_ads">Support the developer by enabling ads</string>
 </resources>

@@ -24,6 +24,7 @@ class AppSettings @Inject constructor(
         const val APP_THEME = "APP_THEME"
         const val VIDEO_PLAYER = "VIDEO_PLAYER"
         const val LAST_UPDATED = "LAST_UPDATED"
+        const val ENABLE_ADS = "ENABLE_ADS"
     }
 
     private val sessionStore = appContext.dataStore
@@ -83,6 +84,22 @@ class AppSettings @Inject constructor(
         val parsed = Converter.fromTimeInMills(lastUpdated.toLong())
         Log.d(TAG, "fetchLastUpdated: $parsed")
         return parsed
+    }
+
+    suspend fun saveEnableAds(enable: Boolean) {
+        val dataStoreKey = stringPreferencesKey(ENABLE_ADS)
+        sessionStore.edit { settings ->
+            settings[dataStoreKey] = enable.toString()
+        }
+        Log.d(TAG, "saveEnableAds: $enable")
+    }
+
+    suspend fun fetchEnableAds(): Boolean {
+        val dataStoreKey = stringPreferencesKey(ENABLE_ADS)
+        val preferences = sessionStore.data.first()
+        val enable = preferences[dataStoreKey] ?: return true
+        Log.d(TAG, "fetchEnableAds: $enable")
+        return enable.toBoolean()
     }
 }
 
