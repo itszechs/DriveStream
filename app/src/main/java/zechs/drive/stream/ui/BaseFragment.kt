@@ -15,6 +15,14 @@ abstract class BaseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        enterTransition = MaterialSharedAxis(
+            /* axis */ MaterialSharedAxis.X,
+            /* forward */ true
+        ).apply {
+            interpolator = LinearInterpolator()
+            duration = 300
+        }
+
         returnTransition = MaterialSharedAxis(
             /* axis */ MaterialSharedAxis.X,
             /* forward */ false
