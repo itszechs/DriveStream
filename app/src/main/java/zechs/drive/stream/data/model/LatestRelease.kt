@@ -13,6 +13,6 @@ data class LatestRelease(
     val htmlUrl: String
 ) {
 
-    fun isLatest() = tagName != BuildConfig.VERSION_NAME
+    fun isLatest() = tagName == BuildConfig.VERSION_NAME
 
 }
