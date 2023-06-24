@@ -60,4 +60,5 @@
     <string name="fill_all_fields">Please fill all the fields</string>
     <string name="notification_permission_rationale">Please grant notification permission to receive update notifications</string>
     <string name="grant">Grant</string>
+    <string name="app_settings">App Settings</string>
 </resources>
