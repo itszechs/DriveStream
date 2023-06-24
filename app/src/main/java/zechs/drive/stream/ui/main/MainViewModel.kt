@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import zechs.drive.stream.data.model.LatestRelease
 import zechs.drive.stream.data.repository.GithubRepository
+import zechs.drive.stream.utils.AppSettings
 import zechs.drive.stream.utils.AppTheme
 import zechs.drive.stream.utils.SessionManager
 import zechs.drive.stream.utils.ThemeManager
@@ -23,7 +24,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val sessionManager: SessionManager,
     private val githubRepository: GithubRepository,
-    private val themeManager: ThemeManager
+    private val appSettings: AppSettings
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
@@ -64,13 +65,13 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun getTheme() {
-        val fetchTheme = themeManager.fetchTheme()
+        val fetchTheme = appSettings.fetchTheme()
         currentThemeIndex = fetchTheme.value
         _theme.emit(fetchTheme)
     }
 
     fun setTheme(theme: AppTheme) = viewModelScope.launch {
-        themeManager.saveTheme(theme)
+        appSettings.saveTheme(theme)
         getTheme()
     }
 

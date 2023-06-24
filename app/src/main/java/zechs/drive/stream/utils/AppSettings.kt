@@ -11,15 +11,15 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ThemeManager @Inject constructor(
+class AppSettings @Inject constructor(
     @ApplicationContext appContext: Context
 ) {
 
     companion object {
         private val Context.dataStore by preferencesDataStore(
-            "APP_THEME"
+            "APP_SETTINGS"
         )
-        const val TAG = "ThemeManager"
+        const val TAG = "AppSettings"
         const val APP_THEME = "APP_THEME"
     }
 
