@@ -16,7 +16,7 @@ import zechs.drive.stream.data.repository.GithubRepository
 import zechs.drive.stream.utils.AppSettings
 import zechs.drive.stream.utils.AppTheme
 import zechs.drive.stream.utils.SessionManager
-import zechs.drive.stream.utils.ThemeManager
+import zechs.drive.stream.utils.VideoPlayer
 import zechs.drive.stream.utils.state.Resource
 import javax.inject.Inject
 
@@ -47,6 +47,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             getTheme()
             val status = getLoginStatus()
+            if (status) getPlayer()
             _hasLoggedIn.value = status
             delay(250L)
             _isLoading.value = false
@@ -73,6 +74,19 @@ class MainViewModel @Inject constructor(
     fun setTheme(theme: AppTheme) = viewModelScope.launch {
         appSettings.saveTheme(theme)
         getTheme()
+    }
+
+    var currentPlayerIndex = VideoPlayer.MPV
+        private set
+
+    private suspend fun getPlayer() {
+        val fetchPlayer = appSettings.fetchPlayer()
+        currentPlayerIndex = fetchPlayer
+    }
+
+    fun setPlayer(player: VideoPlayer) = viewModelScope.launch {
+        appSettings.savePlayer(player)
+        getPlayer()
     }
 
 }

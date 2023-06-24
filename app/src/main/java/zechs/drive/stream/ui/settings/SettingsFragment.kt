@@ -12,6 +12,7 @@ import zechs.drive.stream.databinding.FragmentSettingsBinding
 import zechs.drive.stream.ui.BaseFragment
 import zechs.drive.stream.ui.main.MainViewModel
 import zechs.drive.stream.utils.AppTheme
+import zechs.drive.stream.utils.VideoPlayer
 
 
 class SettingsFragment : BaseFragment() {
@@ -45,6 +46,7 @@ class SettingsFragment : BaseFragment() {
         }
 
         setupThemeMenu()
+        setupDefaultPlayerMenu()
     }
 
     private fun setupThemeMenu() {
@@ -67,6 +69,30 @@ class SettingsFragment : BaseFragment() {
                         else -> throw IllegalArgumentException("Unknown theme value")
                     }
                     mainViewModel.setTheme(theme)
+                    dialog.dismiss()
+                }
+            }.also { it.show() }
+        }
+    }
+
+    private fun setupDefaultPlayerMenu() {
+        val players = listOf(
+            getString(R.string.exoplayer),
+            getString(R.string.mpv)
+        )
+        binding.settingDefaultPlayer.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext()).apply {
+                setTitle(getString(R.string.default_player))
+                setSingleChoiceItems(
+                    players.toTypedArray(),
+                    mainViewModel.currentPlayerIndex.value
+                ) { dialog, item ->
+                    val player = when (item) {
+                        VideoPlayer.EXO_PLAYER.value -> VideoPlayer.EXO_PLAYER
+                        VideoPlayer.MPV.value -> VideoPlayer.MPV
+                        else -> throw IllegalArgumentException("Unknown default player")
+                    }
+                    mainViewModel.setPlayer(player)
                     dialog.dismiss()
                 }
             }.also { it.show() }

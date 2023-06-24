@@ -21,6 +21,7 @@ class AppSettings @Inject constructor(
         )
         const val TAG = "AppSettings"
         const val APP_THEME = "APP_THEME"
+        const val VIDEO_PLAYER = "VIDEO_PLAYER"
     }
 
     private val sessionStore = appContext.dataStore
@@ -45,6 +46,24 @@ class AppSettings @Inject constructor(
         return appTheme
     }
 
+    suspend fun savePlayer(player: VideoPlayer) {
+        val dataStoreKey = stringPreferencesKey(VIDEO_PLAYER)
+        sessionStore.edit { settings ->
+            settings[dataStoreKey] = player.text
+        }
+        Log.d(TAG, "savePlayer: ${player.text}")
+    }
+
+    suspend fun fetchPlayer(): VideoPlayer {
+        val dataStoreKey = stringPreferencesKey(VIDEO_PLAYER)
+        val preferences = sessionStore.data.first()
+        val videoPlayer = when (preferences[dataStoreKey]) {
+            VideoPlayer.EXO_PLAYER.text -> VideoPlayer.EXO_PLAYER
+            else -> VideoPlayer.MPV
+        }
+        Log.d(TAG, "fetchPlayer: $videoPlayer")
+        return videoPlayer
+    }
 }
 
 enum class AppTheme(
@@ -54,4 +73,13 @@ enum class AppTheme(
     DARK("Dark", 0),
     LIGHT("Light", 1),
     SYSTEM("System", 2)
+}
+
+enum class VideoPlayer(
+    val text: String,
+    val value: Int
+) {
+    EXO_PLAYER("ExoPlayer", 0),
+    MPV("MPV", 1),
+
 }
