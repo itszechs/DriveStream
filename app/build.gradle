@@ -76,7 +76,7 @@ dependencies {
     def exoplayer_version = "2.18.7"
     def moshi_version = "1.15.0"
     def retrofit_version = "2.9.0"
-    def room_version = "2.5.1"
+    def room_version = "2.5.2"
 
     // Firebase
     implementation platform("com.google.firebase:firebase-bom:32.1.0")
