@@ -69,4 +69,7 @@
     <string name="mpv">MPV</string>
     <string name="enable_ads">Enable Ads</string>
     <string name="support_the_developer_by_enabling_ads">Support the developer by enabling ads</string>
+    <string name="disable_ads">Disable Ads</string>
+    <string name="disable_ads_message">Are you sure you want to disable ads?\n\nThis will remove all ads from the app. Ads help support the development of this app.</string>
+    <string name="thank_you_for_supporting_the_app">Thank you for supporting the app!</string>
 </resources>

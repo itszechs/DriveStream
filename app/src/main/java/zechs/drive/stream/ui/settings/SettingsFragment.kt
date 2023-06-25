@@ -1,6 +1,7 @@
 package zechs.drive.stream.ui.settings
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -161,8 +162,25 @@ class SettingsFragment : BaseFragment() {
     private fun setupAdsSetting() {
         binding.switchAdsSupport.isChecked = mainViewModel.adsEnabled
         binding.settingAdsSupport.setOnClickListener {
-            binding.switchAdsSupport.isChecked = !binding.switchAdsSupport.isChecked
-            mainViewModel.setEnableAds(binding.switchAdsSupport.isChecked)
+            if (binding.switchAdsSupport.isChecked) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(getString(R.string.disable_ads))
+                    .setMessage(getString(R.string.disable_ads_message))
+                    .setNegativeButton(getString(R.string.no)) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
+                        dialog.dismiss()
+                        Log.d(TAG, "Disabling ads")
+                        binding.switchAdsSupport.isChecked = false
+                        mainViewModel.setEnableAds(false)
+                    }
+                    .show()
+            } else {
+                binding.switchAdsSupport.isChecked = true
+                mainViewModel.setEnableAds(true)
+                showSnackBar(getString(R.string.thank_you_for_supporting_the_app))
+            }
         }
     }
 
