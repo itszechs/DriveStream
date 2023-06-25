@@ -25,12 +25,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import zechs.drive.stream.BuildConfig
 import zechs.drive.stream.R
 import zechs.drive.stream.data.model.LatestRelease
 import zechs.drive.stream.databinding.ActivityMainBinding
+import zechs.drive.stream.utils.AdUnits
 import zechs.drive.stream.utils.AppTheme
 import zechs.drive.stream.utils.ext.navigateSafe
 import zechs.drive.stream.utils.state.Resource
@@ -79,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         themeObserver()
         updateObserver()
         redirectOnLogin()
+        setupAds()
     }
 
     private fun themeObserver() {
@@ -140,6 +146,7 @@ class MainActivity : AppCompatActivity() {
                         sendUpdateNotification(release)
                     }
                 }
+
                 is Resource.Error -> Log.d(TAG, it.message!!)
                 else -> {}
             }
@@ -244,4 +251,30 @@ class MainActivity : AppCompatActivity() {
         }
         AppCompatDelegate.setDefaultNightMode(mode)
     }
+
+    private fun setupAds() {
+        val linearLayout = binding.linearLayout
+        var adView: AdView? = null
+        val adId = if (BuildConfig.DEBUG) AdUnits.DEBUG_BANNER else AdUnits.RELEASE_BANNER
+
+        viewModel.showAds.observe(this) { enabled ->
+            if (enabled) {
+                Log.d(TAG, "setupAds(), Loading AdView...")
+                adView = AdView(this@MainActivity)
+                adView!!.apply {
+                    setAdSize(AdSize.BANNER)
+                    adUnitId = adId
+                    loadAd(AdRequest.Builder().build())
+                }
+                linearLayout.addView(adView)
+            } else {
+                if (adView == null) return@observe
+                Log.d(TAG, "setupAds(), Removing AdView...")
+                linearLayout.removeView(adView)
+                adView!!.destroy()
+                adView = null
+            }
+        }
+    }
+
 }

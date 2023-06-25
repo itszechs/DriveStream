@@ -4,7 +4,13 @@ plugins {
     id "androidx.navigation.safeargs.kotlin"
     id "kotlin-kapt"
     id "dagger.hilt.android.plugin"
+    id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
 }
+
+def localPropertiesFile = rootProject.file("local.properties")
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(localPropertiesFile))
 
 android {
 
@@ -25,6 +31,9 @@ android {
         archivesBaseName = "${applicationId}-${versionCode}"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        resValue "string", "ad_app_id", localProperties['ad.appid']
+        buildConfigField "String", "ad_home_banner", localProperties['ad.home.banner']
     }
 
     buildTypes {
@@ -65,9 +74,18 @@ dependencies {
     implementation project(path: ":mpv")
 
     def exoplayer_version = "2.18.7"
-    def moshi_version = '1.15.0'
+    def moshi_version = "1.15.0"
     def retrofit_version = "2.9.0"
     def room_version = "2.5.1"
+
+    // Firebase
+    implementation platform("com.google.firebase:firebase-bom:32.1.0")
+    // Analytics
+    implementation "com.google.firebase:firebase-analytics-ktx"
+    // Crashlytics
+    implementation "com.google.firebase:firebase-crashlytics-ktx"
+    // Admob
+    implementation "com.google.android.gms:play-services-ads:22.1.0"
 
     // Room
     implementation "androidx.room:room-runtime:$room_version"
@@ -111,8 +129,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1"
 
     // Dagger hilt
-    implementation 'com.google.dagger:hilt-android:2.46.1'
-    kapt 'com.google.dagger:hilt-compiler:2.46.1'
+    implementation "com.google.dagger:hilt-android:2.46.1"
+    kapt "com.google.dagger:hilt-compiler:2.46.1"
 
     // Splash
     implementation "androidx.core:core-splashscreen:1.0.1"

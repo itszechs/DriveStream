@@ -117,6 +117,52 @@
                 </LinearLayout>
             </LinearLayout>
 
+
+            <LinearLayout
+                android:id="@+id/settingAdsSupport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@null" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/enable_ads"
+                        android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/support_the_developer_by_enabling_ads"
+                        android:textAppearance="?attr/textAppearanceBodySmall" />
+
+                </LinearLayout>
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchAdsSupport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:clickable="false" />
+            </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/settingCheckForUpdate"
                 android:layout_width="match_parent"
