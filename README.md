@@ -62,6 +62,10 @@ download the file in order to stream it.
 Thanks to [mpv-android](https://github.com/mpv-android) for buildscripts to compile `libMPV`
 and `MPVLib` `MPVView`.
 
+## Support the project
+
+<a href="https://www.buymeacoffee.com/zechs"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=zechs&button_colour=FFDD00&font_colour=000000&font_family=Poppins&outline_colour=000000&coffee_colour=ffffff" /></a>
+
 ## Note
 
 Starting [v1.3.1](https://github.com/itszechs/DriveStream/tree/1.3.1) users MUST create their own OAuth client to continue using the app.
