@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
+import zechs.drive.stream.data.local.AccountsDao
 import zechs.drive.stream.data.model.DriveClient
 import zechs.drive.stream.data.model.TokenResponse
 import javax.inject.Inject
@@ -18,7 +19,8 @@ import javax.inject.Singleton
 @Singleton
 class SessionManager @Inject constructor(
     @ApplicationContext appContext: Context,
-    private val gson: Gson
+    private val gson: Gson,
+    private val accountsManager: AccountsDao,
 ) {
 
     private val sessionStore = appContext.dataStore
@@ -45,12 +47,10 @@ class SessionManager @Inject constructor(
 
     suspend fun saveAccessToken(data: TokenResponse) {
         val dataStoreKey = stringPreferencesKey(ACCESS_TOKEN)
-        val currentTimeInSeconds = System.currentTimeMillis() / 1000
-        val newData = data.copy(
-            expiresIn = currentTimeInSeconds + data.expiresIn
-        )
+        val refreshToken = fetchRefreshToken()!!
+        accountsManager.updateAccessToken(refreshToken, gson.toJson(data))
         sessionStore.edit { settings ->
-            settings[dataStoreKey] = gson.toJson(newData)
+            settings[dataStoreKey] = gson.toJson(data)
         }
         Log.d(TAG, "saveAccessToken: $data")
     }
