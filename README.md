@@ -20,10 +20,10 @@ Stream your video files directly from Google Drive with this specialized client.
       <a href="https://github.com/itszechs/DriveStream/latest">
     <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/itszechs/DriveStream?style=for-the-badge">
   </a>
-  <a href="https://github.com/itszechs/DriveStream/blob/master/LICENSE">
+  <a href="https://github.com/itszechs/DriveStream/blob/main/LICENSE">
     <img alt="GitHub" src="https://img.shields.io/github/license/itszechs/DriveStream?style=for-the-badge">
   </a>
-  <img alt="Codefactor rating" src="https://img.shields.io/codefactor/grade/github/itszechs/DriveStream/master?style=for-the-badge">
+  <img alt="Codefactor rating" src="https://img.shields.io/codefactor/grade/github/itszechs/DriveStream/main?style=for-the-badge">
 </div>
 
 <br>
