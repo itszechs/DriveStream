@@ -2,6 +2,7 @@ package zechs.drive.stream.data.model
 
 import androidx.annotation.Keep
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -16,6 +17,8 @@ data class Account(
     val refreshToken: String,
     val accessToken: String
 ) {
+
+    @Ignore var isDefault: Boolean = false
 
     fun getDriveClient() = DriveClient(
         clientId = clientId,
