@@ -52,6 +52,7 @@ class FirstRunProfileMigrator(
                 accessToken = gson.toJson(accessToken)
             )
             accountsManager.addAccount(account)
+            sessionManager.saveDefault(profileName)
             Log.d(TAG, "migrateSessionToAccountsTable: $account")
         }
         markFirstRun()

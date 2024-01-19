@@ -83,6 +83,22 @@ class SessionManager @Inject constructor(
         return value
     }
 
+    suspend fun saveDefault(profile: String) {
+        val dataStoreKey = stringPreferencesKey(DEFAULT_PROFILE)
+        sessionStore.edit { settings ->
+            settings[dataStoreKey] = profile
+        }
+        Log.d(TAG, "saveDefault: $profile")
+    }
+
+    suspend fun fetchDefault(): String? {
+        val dataStoreKey = stringPreferencesKey(DEFAULT_PROFILE)
+        val preferences = sessionStore.data.first()
+        val value = preferences[dataStoreKey]
+        Log.d(TAG, "fetchDefault: $value")
+        return value
+    }
+
     suspend fun resetDataStore() {
         sessionStore.edit { it.clear() }
     }
@@ -95,6 +111,7 @@ class SessionManager @Inject constructor(
         const val DRIVE_CLIENT = "DRIVE_CLIENT"
         const val ACCESS_TOKEN = "ACCESS_TOKEN"
         const val REFRESH_TOKEN = "REFRESH_TOKEN"
+        const val DEFAULT_PROFILE = "DEFAULT_PROFILE"
     }
 
 }
