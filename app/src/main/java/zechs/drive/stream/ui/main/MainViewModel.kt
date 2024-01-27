@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ import zechs.drive.stream.data.model.LatestRelease
 import zechs.drive.stream.data.repository.GithubRepository
 import zechs.drive.stream.utils.AppSettings
 import zechs.drive.stream.utils.AppTheme
+import zechs.drive.stream.utils.FirstRunProfileMigrator
 import zechs.drive.stream.utils.SessionManager
 import zechs.drive.stream.utils.VideoPlayer
 import zechs.drive.stream.utils.state.Resource
@@ -24,7 +26,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val sessionManager: SessionManager,
     private val githubRepository: GithubRepository,
-    private val appSettings: AppSettings
+    private val appSettings: AppSettings,
+    private val firstRunProfileMigrator: FirstRunProfileMigrator,
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
@@ -56,7 +59,8 @@ class MainViewModel @Inject constructor(
         private set
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            firstRunProfileMigrator.migrateSessionToAccountsTable()
             getTheme()
             getEnableAds()
             val status = getLoginStatus()

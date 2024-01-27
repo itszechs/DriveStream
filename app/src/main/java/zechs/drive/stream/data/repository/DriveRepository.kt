@@ -103,7 +103,11 @@ class DriveRepository @Inject constructor(
                 )
             )
             Log.d(TAG, "Received access token (${token.accessToken})")
-            sessionManager.saveAccessToken(token)
+            val currentTimeInSeconds = System.currentTimeMillis() / 1000
+            val newToken = token.copy(
+                expiresIn = currentTimeInSeconds + token.expiresIn
+            )
+            sessionManager.saveAccessToken(newToken)
             Resource.Success(token)
         } catch (e: Exception) {
             doOnError(e)
@@ -140,7 +144,11 @@ class DriveRepository @Inject constructor(
             // saving in data store
             sessionManager.saveClient(client)
             sessionManager.saveRefreshToken(token.refreshToken)
-            sessionManager.saveAccessToken(token.toTokenResponse())
+            val currentTimeInSeconds = System.currentTimeMillis() / 1000
+            val newToken = token.toTokenResponse().copy(
+                expiresIn = currentTimeInSeconds + token.expiresIn
+            )
+            sessionManager.saveAccessToken(newToken)
 
             Resource.Success(token)
         } catch (e: Exception) {

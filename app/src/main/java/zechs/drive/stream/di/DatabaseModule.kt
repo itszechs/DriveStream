@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import zechs.drive.stream.data.local.AccountsDatabase
 import zechs.drive.stream.data.local.WatchListDao
 import zechs.drive.stream.data.local.WatchListDatabase
 import zechs.drive.stream.data.repository.WatchListRepository
@@ -17,6 +18,7 @@ import javax.inject.Singleton
 object DatabaseModule {
 
     private const val WATCHLIST_DATABASE_NAME = "watch_list.db"
+    private const val ACCOUNTS_DATABASE_NAME = "accounts.db"
 
     @Singleton
     @Provides
@@ -41,5 +43,21 @@ object DatabaseModule {
     fun provideWatchListRepository(
         watchListDao: WatchListDao
     ) = WatchListRepository(watchListDao)
+
+    @Singleton
+    @Provides
+    fun provideAccountsDatabase(
+        @ApplicationContext appContext: Context
+    ) = Room.databaseBuilder(
+        appContext,
+        AccountsDatabase::class.java,
+        ACCOUNTS_DATABASE_NAME
+    ).build()
+
+    @Singleton
+    @Provides
+    fun provideAccountsDao(
+        db: AccountsDatabase
+    ) = db.getAccountsDao()
 
 }
